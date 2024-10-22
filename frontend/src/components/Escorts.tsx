@@ -10,7 +10,7 @@ export default function Escorts() {
     }
 
     return(
-        <main>
+        <main className="bg-black">
             <section className="grid grid-cols-3 gap-1">
                 {usuarios.map(usuario => (
                     <Link to={`/detalle/${usuario.id}`} key={usuario.id}>

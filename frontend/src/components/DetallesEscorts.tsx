@@ -14,11 +14,16 @@ export default function DetallesEscorts() {
     if (!usuario) {
         return <div>Usuario no encontrado</div>;
     }
+    console.log(usuario);
     
     return(
         <>
+        
+        <main>
+        <img src={usuario.imagenes} alt="" />
         <h1>{usuario.nombre}</h1>
         <p>{usuario.edad}</p>
+        </main>
         </>
     )
 }
