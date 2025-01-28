@@ -43,16 +43,13 @@ const Registro = () => {
                                 value={correo}
                                 onChange={(e) => setCorreo(e.target.value)}
                                 required
-                                className="block w-full rounded-md px-3 py-1.5"
+                                className="block w-full rounded-md px-3 py-1.5 text-black"
                             />
                         </div>
                     </div>
                     <div>
                         <div className="flex items-center justify-between">
                             <label htmlFor="contraseña" className="block text-sm/6 font-medium">Contraseña:</label>
-                            <div className="text-sm">
-                                <a href="#" className="font-semibold text-[#EA580C]">Olvidaste tu contraseña?</a>
-                            </div>
                         </div>
                         <div className="mt-2">
                             <input
@@ -61,7 +58,7 @@ const Registro = () => {
                                 value={contraseña}
                                 onChange={(e) => setContraseña(e.target.value)}
                                 required
-                                className="block w-full rounded-md px-3 py-1.5"
+                                className="block w-full rounded-md px-3 py-1.5 text-black focus:outline-[#EA580C] shadow-none border-transparent bg-red-500"
                             />
                         </div>
                     </div>

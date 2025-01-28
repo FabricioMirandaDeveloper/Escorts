@@ -4,7 +4,7 @@ import Registro from "./Registro";
 export default function Home() {
     return(
         <>
-        <Header/>
+        {/* <Header/> */}
         <Registro/>
         </>
     )
