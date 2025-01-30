@@ -5,6 +5,7 @@ import "./main.css"
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Details from './views/Details.tsx'
 import Registro from './views/Registro.tsx'
+import Login from './views/Login.tsx'
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/registro",
     element: <Registro/>
+  },
+  {
+    path: "/login",
+    element: <Login/>
   }
 ])
 createRoot(document.getElementById('root')!).render(
