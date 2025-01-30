@@ -35,7 +35,7 @@ const Registro = () => {
 
                 <form onSubmit={manejarRegistro} className="space-y-6">
                     <div>
-                        <label htmlFor="nombre" className="block text-sm/6 font-medium">Correo electrónico:</label>
+                        <label htmlFor="correo" className="block text-sm/6 font-medium">Correo electrónico:</label>
                         <div className="mt-2">
                             <input
                                 type="email"
@@ -43,7 +43,7 @@ const Registro = () => {
                                 value={correo}
                                 onChange={(e) => setCorreo(e.target.value)}
                                 required
-                                className="block w-full rounded-md px-3 py-1.5 text-black"
+                                className="block w-full rounded-md px-3 py-1.5 text-black focus:outline-[#EA580C]"
                             />
                         </div>
                     </div>
@@ -58,7 +58,7 @@ const Registro = () => {
                                 value={contraseña}
                                 onChange={(e) => setContraseña(e.target.value)}
                                 required
-                                className="block w-full rounded-md px-3 py-1.5 text-black focus:outline-[#EA580C] shadow-none border-transparent bg-red-500"
+                                className="block w-full rounded-md px-3 py-1.5 text-black focus:outline-[#EA580C]"
                             />
                         </div>
                     </div>
