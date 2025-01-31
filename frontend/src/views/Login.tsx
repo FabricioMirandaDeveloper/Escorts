@@ -41,6 +41,12 @@ const Login = () => {
                     <div>
                         <div className="flex items-center justify-between">
                             <label htmlFor="contraseña" className="block text-sm/6 font-medium">Contraseña:</label>
+                            <button
+                                    type="button"
+                                    className="text-sm text-[#EA580C] hover:text-[#FF6B35]"
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </button>
                         </div>
                         <div className="mt-2">
                             <input

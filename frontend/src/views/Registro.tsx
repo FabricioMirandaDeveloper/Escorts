@@ -2,29 +2,52 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase"
 import "./registro.css"
+import toast from "react-hot-toast";
 
 const Registro = () => {
     // Estado para los valores del formulario
     const [correo, setCorreo] = useState<string>('');
     const [contraseña, setContraseña] = useState<string>('');
-    const [mensaje, setMensaje] = useState<string>('')
+    const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para controlar la carga
 
     // Manejo del envío del formulario
     const manejarRegistro = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (contraseña.length < 6) {
-            setMensaje("La contraseña debe tener al menos 6 caracteres.");
+            toast.error("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
 
-        try {
-            await createUserWithEmailAndPassword(auth, correo, contraseña)
-            setMensaje("¡Usuario registrado con éxito!")
-        } catch (error: any) {
-            setMensaje("Hubo un error: " + error.message);
-        }
-    };
+        // Deshabilitar el botón y mostrar estado de carga
+        setIsLoading(true);
+
+        toast.promise(
+            createUserWithEmailAndPassword(auth, correo, contraseña),
+            {
+                loading: "Registrando...",
+                success: <b>¡Usuario registrado con éxito!</b>,
+                error: (error) => {
+                    if (error.code === "auth/email-already-in-use") {
+                        return <b>Este correo ya está registrado. ¿Quieres iniciar sesión?</b>
+                    } else {
+                        return <b>Hubo un error: {error.message}</b>
+                    }
+                }
+            }
+        )
+            .then(() => {
+                setCorreo("")
+                setContraseña("")
+            })
+            .catch(() => {
+                // No es necesario hacer nada aquí, ya que el error se maneja en toast.promise
+            })
+            .finally(() => {
+                // Rehabilitar el botón después de la operación
+                setIsLoading(false);
+            })
+    }
 
     return (
         <main className="flex min-h-full flex-1 flex-col justify-center py-12 px-6 lg:px-8">
@@ -63,11 +86,10 @@ const Registro = () => {
                         </div>
                     </div>
                     <div>
-                        <button type="submit" className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white bg-[#EA580C]">Registrar</button>
+                        <button type="submit" disabled={isLoading} className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white bg-[#EA580C] disabled:opacity-50">{isLoading ? "Registrando..." : "Registrar"}</button>
                     </div>
                 </form>
             </div>
-            {mensaje && <p>{mensaje}</p>}
         </main>
     );
 };

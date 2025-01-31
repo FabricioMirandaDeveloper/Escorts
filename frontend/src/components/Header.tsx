@@ -11,7 +11,7 @@ export default function Header() {
                 <FontAwesomeIcon icon={faFire} className="text-orange-600" />
             </div>
             <div>
-                <button className="bg-[#EA580C] p-1.5 rounded-lg text-xs font-medium" onClick={() => navigate("/login")}>Publicar anuncio</button>
+                <button className="bg-[#EA580C] p-1.5 rounded-lg text-xs font-bold" onClick={() => navigate("/login")}>Publicar anuncio</button>
             </div>
         </header>
     )
