@@ -2,11 +2,16 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth } from "../../firebase";
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
     const [correo, setCorreo] = useState<string>('');
     const [contraseña, setContraseña] = useState<string>('');
     const [mensaje, setMensaje] = useState<string>('');
+    const [mostrarContraseña, setMostrarContraseña] = useState<boolean>(false)
+
     const manejarLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -19,6 +24,7 @@ const Login = () => {
     };
     return(
         <>
+        <Header/>
         <main className="flex min-h-full flex-1 flex-col justify-center py-12 px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <h2 className="mt-10 text-center text-2xl/9 font-bold text-white">INICIA SESIÓN</h2>
@@ -48,15 +54,18 @@ const Login = () => {
                                     ¿Olvidaste tu contraseña?
                                 </button>
                         </div>
-                        <div className="mt-2">
+                        <div className="mt-2 relative">
                             <input
-                                type="password"
+                                type={mostrarContraseña ? "text" : "password"}
                                 id="contraseña"
                                 value={contraseña}
                                 onChange={(e) => setContraseña(e.target.value)}
                                 required
                                 className="block w-full rounded-md px-3 py-1.5 text-black focus:outline-[#EA580C]"
                             />
+                            <button type="button" onClick={() => setMostrarContraseña(!mostrarContraseña)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                                {mostrarContraseña ? (<FontAwesomeIcon icon={faEye} className="text-gray-500"/>) : (<FontAwesomeIcon icon={faEyeSlash} className="text-gray-500"/>)}
+                            </button>
                         </div>
                     </div>
                     <div>
