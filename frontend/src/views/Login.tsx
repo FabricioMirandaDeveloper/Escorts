@@ -11,6 +11,7 @@ const Login = () => {
     const [correo, setCorreo] = useState<string>('');
     const [contraseña, setContraseña] = useState<string>('');
     const [mostrarContraseña, setMostrarContraseña] = useState<boolean>(false)
+    const [cargando, setCargando] = useState<boolean>(false)
 
     const navigate = useNavigate()
 
@@ -24,7 +25,7 @@ const Login = () => {
         } catch (error: any) {
             switch (error.code) {
                 case 'auth/wrong-password':
-                    toast.error("Contraseña incorecta. Por favor, intentalo de nuevo.")
+                    toast.error("Contraseña incorrecta. Por favor, intentalo de nuevo.")
                     break
                 case 'auth/user-not-found':
                     toast.error("No se encontró una cuenta con este correo electrónico.");
@@ -39,8 +40,10 @@ const Login = () => {
                     toast.error("Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.");
                     break;
             }
+        } finally {
+            setCargando(false)
         }
-    };
+    }
     return (
         <>
             <Header />
@@ -66,12 +69,13 @@ const Login = () => {
                         <div>
                             <div className="flex items-center justify-between">
                                 <label htmlFor="contraseña" className="block text-sm/6 font-medium">Contraseña:</label>
-                                <button
+                                <Link
+                                    to="/recuperarContraseña"
                                     type="button"
                                     className="text-sm text-[#EA580C] hover:text-[#FF6B35]"
                                 >
                                     ¿Olvidaste tu contraseña?
-                                </button>
+                                </Link>
                             </div>
                             <div className="mt-2 relative">
                                 <input
@@ -88,7 +92,7 @@ const Login = () => {
                             </div>
                         </div>
                         <div>
-                            <button type="submit" className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white bg-[#EA580C]">Iniciar Sesión</button>
+                            <button type="submit" disabled={cargando} className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white bg-[#EA580C]">{cargando ? "Cargando..." : "Iniciar Sesión"}</button>
                         </div>
                     </form>
                     <p className="mt-4 text-center text-sm text-white">

@@ -8,6 +8,7 @@ import Registro from './views/Registro.tsx'
 import Login from './views/Login.tsx'
 import { Toaster } from 'react-hot-toast'
 import PanelDeControl from './views/PanelDeControl.tsx'
+import RecuperarContrasena from './views/RecuperarContrasena.tsx'
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login/>
+  },
+  {
+    path: "/recuperarContraseña",
+    element: <RecuperarContrasena/>
   },
   {
     path: "/panelDeControl",
