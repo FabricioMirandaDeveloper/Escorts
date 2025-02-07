@@ -9,6 +9,7 @@ import Login from './views/Login.tsx'
 import { Toaster } from 'react-hot-toast'
 import PanelDeControl from './views/PanelDeControl.tsx'
 import RecuperarContrasena from './views/RecuperarContrasena.tsx'
+import PublicarAnuncio from './views/PublicarAnuncio.tsx'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/panelDeControl",
     element: <PanelDeControl/>
+  },
+  {
+    path: "/publicar-anuncio",
+    element: <PublicarAnuncio/>
   }
 ])
 createRoot(document.getElementById('root')!).render(
