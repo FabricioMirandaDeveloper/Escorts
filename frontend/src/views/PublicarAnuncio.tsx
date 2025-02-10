@@ -1,36 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebase";
-import { doc, setDoc } from "firebase/firestore"
+import { doc, setDoc } from "firebase/firestore";
 
 const PublicarAnuncio = () => {
     const [nombre, setNombre] = useState<string>("");
     const [edad, setEdad] = useState<string>("");
     const [numero, setNumero] = useState<string>("");
+    const [imagenes, setImagenes] = useState<File[]>([]);
+    const [previas, setPrevias] = useState<string[]>([]);
+    const [subiendo, setSubiendo] = useState<boolean>(false);
+
+    useEffect(() => {
+        // Generar URLs de vista previa
+        const nuevasPrevias = imagenes.map((imagen) => URL.createObjectURL(imagen));
+        setPrevias(nuevasPrevias);
+
+        // Limpiar URLs anteriores para evitar fugas de memoria
+        return () => {
+            nuevasPrevias.forEach((url) => URL.revokeObjectURL(url));
+        };
+    }, [imagenes]);
+
+    const convertirImagenABase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
 
     const manejarFormulario = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        const user = auth.currentUser
-        console.log(user);
-
+        const user = auth.currentUser;
         if (!user) {
-            toast.error("No estás autenticado. Por favor inicia sesión.")
-            return
+            toast.error("No estás autenticado. Por favor inicia sesión.");
+            return;
         }
 
-        if (!nombre || !edad || !numero) {
-            toast.error("Debes completar todos los campos")
-            return
+        if (!nombre || !edad || !numero || imagenes.length < 3) {
+            toast.error("Debes completar todos los campos y subir al menos 3 imágenes.");
+            return;
         }
 
-        const edadNumero = Number(edad)
-        if (isNaN(edadNumero)) {
-            toast.error("La edad debe ser un número válido")
-            return
-        }
-        if (edadNumero < 18) {
-            toast.error("Debes ser mayor de 18 años para publicar un anuncio");
+        const edadNumero = Number(edad);
+        if (isNaN(edadNumero) || edadNumero < 18) {
+            toast.error("Debes ser mayor de 18 años para publicar un anuncio.");
             return;
         }
 
@@ -40,7 +57,15 @@ const PublicarAnuncio = () => {
             return;
         }
 
+        setSubiendo(true);
+
         try {
+            // Convertir imágenes a Base64
+            const imagenesBase64 = await Promise.all(
+                imagenes.map(async (imagen) => await convertirImagenABase64(imagen))
+            );
+
+            // Guardar en Firestore
             await setDoc(
                 doc(db, "usuarios", user.uid),
                 {
@@ -48,23 +73,34 @@ const PublicarAnuncio = () => {
                     edad: edadNumero,
                     numero: Number(numero),
                     email: user.email,
+                    imagenes: imagenesBase64,
                     actualizado: new Date(),
                 },
                 { merge: true }
-            )
-            toast.success("Información guardada correctamente")
+            );
+            toast.success("Información guardada correctamente");
+            setNombre("");
+            setEdad("");
+            setNumero("");
+            setImagenes([]);
+            setPrevias([]);
         } catch (error) {
-            console.error("Error al guardar los datos: ", error);
-            toast.error("Hubo un error al guardar la información ");
+            console.error("Error al subir imágenes o guardar datos: ", error);
+            toast.error("Hubo un error al guardar la información.");
+        } finally {
+            setSubiendo(false);
         }
-    }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#101828] p-4">
             <div className="w-full max-w-md bg-gray-700 p-6 rounded shadow">
                 <h2 className="text-2xl font-bold text-center mb-4">
                     PUBLICAR ANUNCIO
                 </h2>
-                <h3 className="text-center text-sm font-medium">Completa la informacion requerida para poder publicar tu anuncio</h3>
+                <h3 className="text-center text-sm font-medium">
+                    Completa la información requerida para poder publicar tu anuncio.
+                </h3>
                 <form onSubmit={manejarFormulario} className="space-y-4 mt-6">
                     <div>
                         <label htmlFor="nombre" className="block text-white">
@@ -92,7 +128,9 @@ const PublicarAnuncio = () => {
                             min="18"
                             max="99"
                             required
-                            onInvalid={(e) => e.currentTarget.setCustomValidity("Debes ser mayor de 18 años para publicar un anuncio")}
+                            onInvalid={(e) =>
+                                e.currentTarget.setCustomValidity("Debes ser mayor de 18 años para publicar un anuncio")
+                            }
                             onInput={(e) => e.currentTarget.setCustomValidity("")}
                         />
                     </div>
@@ -114,11 +152,43 @@ const PublicarAnuncio = () => {
                             onInput={(e) => e.currentTarget.setCustomValidity("")}
                         />
                     </div>
+                    <div>
+                        <label htmlFor="imagenes" className="block text-white">
+                            Subir Imágenes (mínimo 3):
+                        </label>
+                        <input
+                            type="file"
+                            id="imagenes"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                setImagenes(files);
+                            }}
+                            className="mt-1 block w-full p-2 rounded bg-white text-black"
+                        />
+                    </div>
+
+                    {/* Vista previa de imágenes */}
+                    {previas.length > 0 && (
+                        <div className="mt-4 flex gap-2 flex-wrap">
+                            {previas.map((src, index) => (
+                                <img
+                                    key={index}
+                                    src={src}
+                                    alt={`Vista previa ${index + 1}`}
+                                    className="w-24 h-24 object-cover rounded-md border border-gray-300"
+                                />
+                            ))}
+                        </div>
+                    )}
+
                     <button
                         type="submit"
+                        disabled={subiendo}
                         className="w-full flex justify-center rounded-md px-3 py-2 font-semibold text-white bg-[#EA580C] hover:bg-[#FF6B35]"
                     >
-                        Publicar Anuncio
+                        {subiendo ? "Subiendo..." : "Publicar Anuncio"}
                     </button>
                 </form>
             </div>
@@ -127,3 +197,4 @@ const PublicarAnuncio = () => {
 };
 
 export default PublicarAnuncio;
+
