@@ -12,11 +12,9 @@ const PublicarAnuncio = () => {
     const [subiendo, setSubiendo] = useState<boolean>(false);
 
     useEffect(() => {
-        // Generar URLs de vista previa
         const nuevasPrevias = imagenes.map((imagen) => URL.createObjectURL(imagen));
         setPrevias(nuevasPrevias);
-
-        // Limpiar URLs anteriores para evitar fugas de memoria
+    
         return () => {
             nuevasPrevias.forEach((url) => URL.revokeObjectURL(url));
         };
@@ -30,7 +28,38 @@ const PublicarAnuncio = () => {
             reader.onerror = (error) => reject(error);
         });
     };
+    const manejarCambioImagenes = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const archivosSeleccionados = Array.from(e.target.files || [])
 
+        // Filtrar archivos duplicados
+        const archivosUnicos = archivosSeleccionados.filter(
+            (archivo) => !imagenes.some((img) => img.name === archivo.name)
+        )
+
+        // Verificar que no supere el límite de 3 imágenes
+        if (imagenes.length + archivosUnicos.length > 3) {
+            toast.error("Solo puedes subir hasta 3 imágenes.")
+            return
+        }
+
+        // Agregar nuevas imágenes sin reemplazar las anteriores
+        setImagenes((prevImagenes) => [...prevImagenes, ...archivosUnicos])
+    }
+
+    const eliminarImagen = (index: number) => {
+        setImagenes((prevImagenes) => {
+            const nuevasImagenes = prevImagenes.filter((_, i) => i !== index);
+            if (nuevasImagenes.length === 0) setPrevias([]); // Limpiar previas solo si no hay imágenes
+            return nuevasImagenes;
+        });
+    
+        setPrevias((prevPrevias) => {
+            const nuevasPrevias = prevPrevias.filter((_, i) => i !== index);
+            URL.revokeObjectURL(prevPrevias[index]);
+            return nuevasPrevias;
+        });
+    };
+    
     const manejarFormulario = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -161,10 +190,7 @@ const PublicarAnuncio = () => {
                             id="imagenes"
                             accept="image/*"
                             multiple
-                            onChange={(e) => {
-                                const files = Array.from(e.target.files || []);
-                                setImagenes(files);
-                            }}
+                            onChange={manejarCambioImagenes}
                             className="mt-1 block w-full p-2 rounded bg-white text-black"
                         />
                     </div>
@@ -173,12 +199,21 @@ const PublicarAnuncio = () => {
                     {previas.length > 0 && (
                         <div className="mt-4 flex gap-2 flex-wrap">
                             {previas.map((src, index) => (
-                                <img
-                                    key={index}
-                                    src={src}
-                                    alt={`Vista previa ${index + 1}`}
-                                    className="w-24 h-24 object-cover rounded-md border border-gray-300"
-                                />
+                                <div key={index} className="relative">
+                                    <img
+                                        src={src}
+                                        alt={`Vista previa ${index + 1}`}
+                                        className="w-24 h-24 object-cover rounded-md border border-gray-300"
+                                    />
+                                    {/* Botón para eliminar la imagen */}
+                                    <button
+                                        onClick={() => eliminarImagen(index)}
+                                        type="button"
+                                        className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1"
+                                    >
+                                        ❌
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     )}
