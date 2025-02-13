@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const PublicarAnuncio = () => {
     const [nombre, setNombre] = useState<string>("");
     const [edad, setEdad] = useState<string>("");
-    const [numero, setNumero] = useState<string>("");
+    const [numero, setNumero] = useState<string>("")
+    const [descripcion, setDescripcion] = useState<string>("")
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
@@ -14,7 +17,7 @@ const PublicarAnuncio = () => {
     useEffect(() => {
         const nuevasPrevias = imagenes.map((imagen) => URL.createObjectURL(imagen));
         setPrevias(nuevasPrevias);
-    
+
         return () => {
             nuevasPrevias.forEach((url) => URL.revokeObjectURL(url));
         };
@@ -52,14 +55,21 @@ const PublicarAnuncio = () => {
             if (nuevasImagenes.length === 0) setPrevias([]); // Limpiar previas solo si no hay imágenes
             return nuevasImagenes;
         });
-    
+
         setPrevias((prevPrevias) => {
             const nuevasPrevias = prevPrevias.filter((_, i) => i !== index);
             URL.revokeObjectURL(prevPrevias[index]);
             return nuevasPrevias;
         });
     };
-    
+
+    const manejarCambioDescripcion = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const texto = e.target.value;
+        if (texto.length <= 200) {
+            setDescripcion(texto);
+        }
+    };
+
     const manejarFormulario = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -69,8 +79,8 @@ const PublicarAnuncio = () => {
             return;
         }
 
-        if (!nombre || !edad || !numero || imagenes.length < 3) {
-            toast.error("Debes completar todos los campos y subir al menos 3 imágenes.");
+        if (!nombre || !edad || !numero || imagenes.length < 3 || descripcion.length < 40) {
+            toast.error("Debes completar todos los campos, subir al menos 3 imágenes y la descripción debe tener al menos 40 caracteres.");
             return;
         }
 
@@ -101,6 +111,7 @@ const PublicarAnuncio = () => {
                     nombre,
                     edad: edadNumero,
                     numero: Number(numero),
+                    descripcion,
                     email: user.email,
                     imagenes: imagenesBase64,
                     actualizado: new Date(),
@@ -111,6 +122,7 @@ const PublicarAnuncio = () => {
             setNombre("");
             setEdad("");
             setNumero("");
+            setDescripcion("");
             setImagenes([]);
             setPrevias([]);
         } catch (error) {
@@ -182,6 +194,23 @@ const PublicarAnuncio = () => {
                         />
                     </div>
                     <div>
+                        <label htmlFor="descripcion" className="block text-white">
+                            Descripción breve (40-200 caracteres):
+                        </label>
+                        <textarea
+                            id="descripcion"
+                            value={descripcion}
+                            onChange={manejarCambioDescripcion}
+                            className="mt-1 block w-full p-2 rounded text-black resize-none"
+                            rows={3}
+                            required
+                            placeholder="Escribe una descripción breve sobre ti (mínimo 40 caracteres)"
+                        />
+                        <p className="text-sm text-gray-300 mt-1">
+                            {descripcion.length} / 200 caracteres
+                        </p>
+                    </div>
+                    <div>
                         <label htmlFor="imagenes" className="block text-white">
                             Subir Imágenes (mínimo 3):
                         </label>
@@ -209,9 +238,9 @@ const PublicarAnuncio = () => {
                                     <button
                                         onClick={() => eliminarImagen(index)}
                                         type="button"
-                                        className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1"
+                                        className="absolute top-0 right-0 flex items-center justify-center  bg-red-500 text-white text-xs rounded-full w-6 h-6"
                                     >
-                                        ❌
+                                        <FontAwesomeIcon icon={faTimes} className="w-3 h-3" />
                                     </button>
                                 </div>
                             ))}
