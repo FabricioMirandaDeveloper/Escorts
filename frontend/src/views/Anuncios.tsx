@@ -53,23 +53,22 @@ const Anuncios = () => {
     return (
         <div className="grid grid-cols-2 gap-2 p-2">
             {anuncios.map((anuncio) => (
-                <div key={anuncio.id} className="bg-white text-black shadow p-4 rounded">
+                <div key={anuncio.id} className="bg-white text-black shadow rounded-lg">
                     {/* Mostrar solo la primera imagen si existe */}
                     {anuncio.imagenes && anuncio.imagenes.length > 0 && (
                         <img
                             src={anuncio.imagenes[0]}
                             alt={`${anuncio.nombre} - imagen`}
-                            className="w-full h-48 object-cover rounded mb-4"
+                            className="w-full h-64 object-cover rounded-t-lg"
                         />
                     )}
-                    <h2 className="text-2xl font-bold mb-2">{anuncio.nombre}</h2>
-                    <p className="mb-2">{anuncio.descripcion}</p>
-                    <p className="mb-2">
-                        <strong>Edad:</strong> {anuncio.edad}
-                    </p>
-                    <p>
-                        <strong>Celular:</strong> {anuncio.numero}
-                    </p>
+                    <div className="p-2">
+                        <h2 className="text-xl font-bold mb-2">{anuncio.nombre}, 
+                            <span className=""> {anuncio.edad} años</span>
+                        </h2>
+                        <p className="mb-2 text-xs">{anuncio.descripcion}</p>
+                    </div>
+
                 </div>
             ))}
         </div>
