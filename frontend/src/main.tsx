@@ -12,6 +12,7 @@ import RecuperarContrasena from './views/RecuperarContrasena.tsx'
 import PublicarAnuncio from './views/PublicarAnuncio.tsx'
 import AnuncioDetalle from './views/AnuncioDetalle.tsx'
 
+
 const router = createBrowserRouter([
   {
     path: "/",

@@ -1,6 +1,12 @@
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Agrega estos estilos para Slick */
+
+
 
 body {
     @apply bg-[#101828] text-white;

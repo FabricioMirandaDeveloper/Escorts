@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { db } from "../../firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import Slider from "react-slick";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 // Interfaz para tipar el anuncio (ajústala según tus necesidades)
 interface Anuncio {
@@ -50,15 +52,58 @@ const AnuncioDetalle = () => {
         return <p>No se encontró el anuncio.</p>;
     }
 
+    // Flechas personalizadas
+const PrevArrow = ({ onClick }: any) => (
+    <div
+        className="absolute z-10 w-10 h-10 left-0 top-1/2 transform -translate-y-1/2 p-2 text-white bg-red-600 rounded-full flex items-center justify-center"
+        onClick={onClick}
+    >
+        <FontAwesomeIcon icon={faArrowLeft} />
+    </div>
+);
+
+const NextArrow = ({ onClick }: any) => (
+    <div
+        className="absolute z-10 w-10 h-10 right-0 top-1/2 transform -translate-y-1/2 text-white bg-red-600 rounded-full flex  items-center justify-center"
+        onClick={onClick}
+    >
+        <FontAwesomeIcon icon={faArrowRight} />
+    </div>
+);
+
+    // Configuración del Slider
+    const sliderSettings = {
+        dots: true,          // Mostrar puntos de navegación
+        infinite: true,      // Desplazamiento infinito
+        speed: 500,          // Velocidad de transición
+        slidesToShow: 1,     // Mostrar solo una imagen por vez
+        slidesToScroll: 1,   // Desplazar una imagen a la vez
+        autoplay: true,      // Autoplay para cambiar automáticamente de imagen
+        autoplaySpeed: 3000, // Intervalo de tiempo entre las transiciones
+        prevArrow: <PrevArrow />,
+        nextArrow: <NextArrow />,
+    };
+
     return (
         <div className="p-4">
+            {/* Botón de cerrar / regresar a anuncios */}
+            <Link to="/" className="absolute z-10 top-5 right-5 w-10 h-10 flex justify-center items-center bg-red-600 rounded-full">
+                <span className="text-xl font-bold">X</span>
+            </Link>
+
             {/* Mostrar imagen ampliada (o un slider si hay varias imágenes) */}
             {anuncio.imagenes && anuncio.imagenes.length > 0 && (
-                <img
-                    src={anuncio.imagenes[0]}
-                    alt={`${anuncio.nombre} - imagen`}
-                    className="w-[288px] min-h-[384px] object-cover rounded-lg mb-4"
-                />
+                <Slider {...sliderSettings}>
+                    {anuncio.imagenes.map((imagen, index) => (
+                        <div key={index} className="w-[288px] h-[384px] mb-4">
+                            <img
+                                src={imagen}
+                                alt={`${anuncio.nombre} - imagen ${index + 1}`}
+                                className="w-full h-full object-cover   rounded"
+                            />
+                        </div>
+                    ))}
+                </Slider>
             )}
 
             <h1 className="text-2xl font-bold mb-2">
@@ -67,8 +112,8 @@ const AnuncioDetalle = () => {
             <p className="mb-4">{anuncio.descripcion}</p>
 
             {/* Sección de contacto vía WhatsApp */}
-            <div className="flex justify-center items-center space-x-2 bg-white py-3 rounded font-bold">
-                <FontAwesomeIcon icon={faWhatsapp} style={{ color: "#63E6BE", fontSize: "30px"}} />
+            <div className="flex justify-center items-center space-x-2 bg-white py-3 rounded font-bold border-[#52CD5F] border-2">
+                <FontAwesomeIcon icon={faWhatsapp} style={{ color: "#52CD5F", fontSize: "30px"}} />
 
                 <a
                     href={`https://wa.me/${anuncio.numero}`}
