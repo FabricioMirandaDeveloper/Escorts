@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 // Interfaz para tipar el anuncio (ajústala según tus necesidades)
 interface Anuncio {
@@ -11,7 +12,7 @@ interface Anuncio {
     descripcion: string;
     email: string;
     imagenes: string[];
-    actualizado: any;
+    actualizado: Timestamp;
 }
 
 const Anuncios = () => {
@@ -53,7 +54,7 @@ const Anuncios = () => {
     return (
         <div className="grid grid-cols-2 gap-2 p-2">
             {anuncios.map((anuncio) => (
-                <div key={anuncio.id} className="bg-white text-black shadow rounded-lg">
+                <Link to={`/anuncio/${anuncio.id}`} key={anuncio.id} className="bg-white text-black shadow rounded-lg">
                     {/* Mostrar solo la primera imagen si existe */}
                     {anuncio.imagenes && anuncio.imagenes.length > 0 && (
                         <img
@@ -69,7 +70,7 @@ const Anuncios = () => {
                         <p className="mb-2 text-xs">{anuncio.descripcion}</p>
                     </div>
 
-                </div>
+                </Link>
             ))}
         </div>
     );
