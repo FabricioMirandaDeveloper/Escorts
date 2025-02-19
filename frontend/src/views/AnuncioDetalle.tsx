@@ -53,23 +53,23 @@ const AnuncioDetalle = () => {
     }
 
     // Flechas personalizadas
-const PrevArrow = ({ onClick }: any) => (
-    <div
-        className="absolute z-10 w-10 h-10 left-0 top-1/2 transform -translate-y-1/2 p-2 text-white bg-red-600 rounded-full flex items-center justify-center"
-        onClick={onClick}
-    >
-        <FontAwesomeIcon icon={faArrowLeft} />
-    </div>
-);
+    const PrevArrow = ({ onClick }: any) => (
+        <div
+            className="absolute z-10 w-10 h-10 left-0 top-1/2 transform -translate-y-1/2 p-2 text-white bg-red-600 rounded-full flex items-center justify-center"
+            onClick={onClick}
+        >
+            <FontAwesomeIcon icon={faArrowLeft} />
+        </div>
+    );
 
-const NextArrow = ({ onClick }: any) => (
-    <div
-        className="absolute z-10 w-10 h-10 right-0 top-1/2 transform -translate-y-1/2 text-white bg-red-600 rounded-full flex  items-center justify-center"
-        onClick={onClick}
-    >
-        <FontAwesomeIcon icon={faArrowRight} />
-    </div>
-);
+    const NextArrow = ({ onClick }: any) => (
+        <div
+            className="absolute z-10 w-10 h-10 right-0 top-1/2 transform -translate-y-1/2 text-white bg-red-600 rounded-full flex  items-center justify-center"
+            onClick={onClick}
+        >
+            <FontAwesomeIcon icon={faArrowRight} />
+        </div>
+    );
 
     // Configuración del Slider
     const sliderSettings = {
@@ -95,7 +95,7 @@ const NextArrow = ({ onClick }: any) => (
             {anuncio.imagenes && anuncio.imagenes.length > 0 && (
                 <Slider {...sliderSettings}>
                     {anuncio.imagenes.map((imagen, index) => (
-                        <div key={index} className="w-[288px] h-[384px] mb-4">
+                        <div key={index} className="w-max-[288px] h-[384px] mb-4">
                             <img
                                 src={imagen}
                                 alt={`${anuncio.nombre} - imagen ${index + 1}`}
@@ -112,14 +112,13 @@ const NextArrow = ({ onClick }: any) => (
             <p className="mb-4">{anuncio.descripcion}</p>
 
             {/* Sección de contacto vía WhatsApp */}
-            <div className="flex justify-center items-center space-x-2 bg-white py-3 rounded font-bold border-[#52CD5F] border-2">
-                <FontAwesomeIcon icon={faWhatsapp} style={{ color: "#52CD5F", fontSize: "30px"}} />
-
+            <div className="fixed bottom-0 left-0 right-0 flex justify-center items-center space-x-2 py-3 font-bold bg-[#52CD5F]">
+                <FontAwesomeIcon icon={faWhatsapp} style={{ color: "white", fontSize: "30px" }} />
                 <a
                     href={`https://wa.me/${anuncio.numero}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#101828]"
+                    className="text-white"
                 >
                     Contactar por WhatsApp
                 </a>

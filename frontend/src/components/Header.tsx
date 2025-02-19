@@ -8,8 +8,8 @@ export default function Header() {
         <header className="bg-[#101828] px-4 py-3 flex justify-between items-center">
             <div className="flex justify-start items-center font-bold text-2xl">
                 <Link to="/" className="flex items-center">
-                <h1 className="text-white mr-2">PROYECTO</h1>
-                <FontAwesomeIcon icon={faFire} className="text-orange-600" />
+                    <h1 className="text-white mr-2">PROYECTO</h1>
+                    <FontAwesomeIcon icon={faFire} className="text-[#EA580C]" />
                 </Link>
             </div>
             <div>

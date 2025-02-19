@@ -4,6 +4,9 @@ import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import departamentosData from "../data/ubigeo_peru_2016_departamentos.json";
+import provinciasData from "../data/ubigeo_peru_2016_provincias.json";
+import distritosData from "../data/ubigeo_peru_2016_distritos.json"
 
 const PublicarAnuncio = () => {
     const [nombre, setNombre] = useState<string>("");
@@ -13,6 +16,12 @@ const PublicarAnuncio = () => {
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
+    const [departamento, setDepartamento] = useState("");
+    const [provincia, setProvincia] = useState("");
+    const [distrito, setDistrito] = useState("");
+
+    const [provincias, setProvincias] = useState<any[]>([]);
+    const [distritos, setDistritos] = useState<any[]>([]);
 
     useEffect(() => {
         const nuevasPrevias = imagenes.map((imagen) => URL.createObjectURL(imagen));
@@ -22,6 +31,32 @@ const PublicarAnuncio = () => {
             nuevasPrevias.forEach((url) => URL.revokeObjectURL(url));
         };
     }, [imagenes]);
+
+    useEffect(() => {
+        if (departamento) {
+            const provinciasFiltradas = provinciasData.filter(
+                (p) => p.department_id === departamento
+            );
+            setProvincias(provinciasFiltradas);
+            setProvincia(""); // Reinicia la provincia al cambiar el departamento
+            setDistrito("");  // Reinicia el distrito
+        } else {
+            setProvincias([]);
+            setDistritos([]);
+        }
+    }, [departamento]);
+
+    useEffect(() => {
+        if (provincia) {
+            const distritosFiltrados = distritosData.filter(
+                (d) => d.province_id === provincia
+            );
+            setDistritos(distritosFiltrados);
+            setDistrito(""); // Reinicia el distrito al cambiar la provincia
+        } else {
+            setDistritos([]);
+        }
+    }, [provincia]);
 
     const convertirImagenABase64 = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -79,6 +114,11 @@ const PublicarAnuncio = () => {
             return;
         }
 
+        if (!departamento || !provincia || !distrito) {
+            toast.error("Debes seleccionar tu departamento, provincia y distrito.");
+            return;
+        }
+
         if (!nombre || !edad || !numero || imagenes.length < 3 || descripcion.length < 40) {
             toast.error("Debes completar todos los campos, subir al menos 3 imágenes y la descripción debe tener al menos 40 caracteres.");
             return;
@@ -115,6 +155,9 @@ const PublicarAnuncio = () => {
                     email: user.email,
                     imagenes: imagenesBase64,
                     actualizado: new Date(),
+                    departamento,
+                    provincia,
+                    distrito,
                 },
                 { merge: true }
             );
@@ -125,6 +168,9 @@ const PublicarAnuncio = () => {
             setDescripcion("");
             setImagenes([]);
             setPrevias([]);
+            setDepartamento("");
+            setProvincia("");
+            setDistrito("");
         } catch (error) {
             console.error("Error al subir imágenes o guardar datos: ", error);
             toast.error("Hubo un error al guardar la información.");
@@ -209,6 +255,65 @@ const PublicarAnuncio = () => {
                         <p className="text-sm text-gray-300 mt-1">
                             {descripcion.length} / 200 caracteres
                         </p>
+                    </div>
+                    <div>
+                        <label htmlFor="departamento" className="block text-white">
+                            Departamento:
+                        </label>
+                        <select
+                            id="departamento"
+                            value={departamento}
+                            onChange={(e) => setDepartamento(e.target.value)}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            required
+                        >
+                            <option value="">Selecciona un departamento</option>
+                            {departamentosData.map(dep => (
+                                <option key={dep.id} value={dep.id}>
+                                    {dep.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="provincia" className="block text-white">
+                            Provincia:
+                        </label>
+                        <select
+                            id="provincia"
+                            value={provincia}
+                            onChange={(e) => setProvincia(e.target.value)}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            required
+                            disabled={!departamento}
+                        >
+                            <option value="">Selecciona una provincia</option>
+                            {provincias.map(prov => (
+                                <option key={prov.id} value={prov.id}>
+                                    {prov.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="distrito" className="block text-white">
+                            Distrito:
+                        </label>
+                        <select
+                            id="distrito"
+                            value={distrito}
+                            onChange={(e) => setDistrito(e.target.value)}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            required
+                            disabled={!provincia}
+                        >
+                            <option value="">Selecciona un distrito</option>
+                            {distritos.map(dist => (
+                                <option key={dist.id} value={dist.id}>
+                                    {dist.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div>
                         <label htmlFor="imagenes" className="block text-white">
