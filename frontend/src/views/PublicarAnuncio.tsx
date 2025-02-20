@@ -16,9 +16,15 @@ const PublicarAnuncio = () => {
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
-    const [departamento, setDepartamento] = useState("");
-    const [provincia, setProvincia] = useState("");
-    const [distrito, setDistrito] = useState("");
+
+    const [departamentoId, setDepartamentoId] = useState("");
+    const [departamentoNombre, setDepartamentoNombre] = useState("");
+
+    const [provinciaId, setProvinciaId] = useState("")
+    const [provinciaNombre, setProvinciaNombre] = useState("")
+
+    const [distritoId, setDistritoId] = useState("");
+    const [distritoNombre, setDistritoNombre] = useState("");
 
     const [provincias, setProvincias] = useState<any[]>([]);
     const [distritos, setDistritos] = useState<any[]>([]);
@@ -33,30 +39,33 @@ const PublicarAnuncio = () => {
     }, [imagenes]);
 
     useEffect(() => {
-        if (departamento) {
+        if (departamentoId) {
             const provinciasFiltradas = provinciasData.filter(
-                (p) => p.department_id === departamento
+                (p) => p.department_id === departamentoId
             );
             setProvincias(provinciasFiltradas);
-            setProvincia(""); // Reinicia la provincia al cambiar el departamento
-            setDistrito("");  // Reinicia el distrito
+            setProvinciaId(""); // Reinicia la provincia al cambiar el departamento
+            setProvinciaNombre("")
+            setDistritoId("");  // Reinicia el distrito
+            setDistritoNombre("")
         } else {
             setProvincias([]);
             setDistritos([]);
         }
-    }, [departamento]);
+    }, [departamentoId]);
 
     useEffect(() => {
-        if (provincia) {
+        if (provinciaId) {
             const distritosFiltrados = distritosData.filter(
-                (d) => d.province_id === provincia
+                (d) => d.province_id === provinciaId
             );
             setDistritos(distritosFiltrados);
-            setDistrito(""); // Reinicia el distrito al cambiar la provincia
+            setDistritoId(""); // Reinicia el distrito al cambiar la provincia
+            setDistritoNombre("")
         } else {
             setDistritos([]);
         }
-    }, [provincia]);
+    }, [provinciaId]);
 
     const convertirImagenABase64 = (file: File): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -114,7 +123,7 @@ const PublicarAnuncio = () => {
             return;
         }
 
-        if (!departamento || !provincia || !distrito) {
+        if (!departamentoId || !provinciaId || !distritoId) {
             toast.error("Debes seleccionar tu departamento, provincia y distrito.");
             return;
         }
@@ -155,9 +164,9 @@ const PublicarAnuncio = () => {
                     email: user.email,
                     imagenes: imagenesBase64,
                     actualizado: new Date(),
-                    departamento,
-                    provincia,
-                    distrito,
+                    departamento: departamentoNombre,
+                    provincia: provinciaNombre,
+                    distrito: distritoNombre,
                 },
                 { merge: true }
             );
@@ -168,9 +177,12 @@ const PublicarAnuncio = () => {
             setDescripcion("");
             setImagenes([]);
             setPrevias([]);
-            setDepartamento("");
-            setProvincia("");
-            setDistrito("");
+            setDepartamentoId("");
+            setDepartamentoNombre("");
+            setProvinciaId("");
+            setProvinciaNombre("");
+            setDistritoId("");
+            setDistritoNombre("");
         } catch (error) {
             console.error("Error al subir imágenes o guardar datos: ", error);
             toast.error("Hubo un error al guardar la información.");
@@ -262,8 +274,17 @@ const PublicarAnuncio = () => {
                         </label>
                         <select
                             id="departamento"
-                            value={departamento}
-                            onChange={(e) => setDepartamento(e.target.value)}
+                            value={departamentoId}
+                            onChange={(e) => {
+                                const selectedDepartment = departamentosData.find(dep => dep.id === e.target.value);
+                                if (selectedDepartment) {
+                                    setDepartamentoId(selectedDepartment.id);
+                                    setDepartamentoNombre(selectedDepartment.name);
+                                } else {
+                                    setDepartamentoId("");
+                                    setDepartamentoNombre("");
+                                }
+                            }}
                             className="mt-1 block w-full p-2 rounded text-black"
                             required
                         >
@@ -281,11 +302,20 @@ const PublicarAnuncio = () => {
                         </label>
                         <select
                             id="provincia"
-                            value={provincia}
-                            onChange={(e) => setProvincia(e.target.value)}
+                            value={provinciaId}
+                            onChange={(e) => {
+                                const selectedProvince = provincias.find((p) => p.id === e.target.value);
+                                if (selectedProvince) {
+                                    setProvinciaId(selectedProvince.id);
+                                    setProvinciaNombre(selectedProvince.name);
+                                } else {
+                                    setProvinciaId("");
+                                    setProvinciaNombre("");
+                                }
+                            }}
                             className="mt-1 block w-full p-2 rounded text-black"
                             required
-                            disabled={!departamento}
+                            disabled={!departamentoId}
                         >
                             <option value="">Selecciona una provincia</option>
                             {provincias.map(prov => (
@@ -301,16 +331,25 @@ const PublicarAnuncio = () => {
                         </label>
                         <select
                             id="distrito"
-                            value={distrito}
-                            onChange={(e) => setDistrito(e.target.value)}
+                            value={distritoId}
+                            onChange={(e) => {
+                                const selectedDistrict = distritos.find((d) => d.id === e.target.value);
+                                if (selectedDistrict) {
+                                    setDistritoId(selectedDistrict.id);
+                                    setDistritoNombre(selectedDistrict.name);
+                                } else {
+                                    setDistritoId("");
+                                    setDistritoNombre("");
+                                }
+                            }}
                             className="mt-1 block w-full p-2 rounded text-black"
+                            disabled={!provinciaId}
                             required
-                            disabled={!provincia}
                         >
                             <option value="">Selecciona un distrito</option>
-                            {distritos.map(dist => (
-                                <option key={dist.id} value={dist.id}>
-                                    {dist.name}
+                            {distritos.map((d) => (
+                                <option key={d.id} value={d.id}>
+                                    {d.name}
                                 </option>
                             ))}
                         </select>

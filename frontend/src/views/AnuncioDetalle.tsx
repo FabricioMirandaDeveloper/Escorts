@@ -17,6 +17,7 @@ interface Anuncio {
     email: string;
     imagenes: string[];
     actualizado: any;
+    distrito: string;
 }
 
 const AnuncioDetalle = () => {
@@ -106,8 +107,8 @@ const AnuncioDetalle = () => {
                 </Slider>
             )}
 
-            <h1 className="text-2xl font-bold mb-2">
-                {anuncio.nombre} | {anuncio.edad} años
+            <h1 className="text-lg font-bold mb-2 text-white">
+                {anuncio.nombre} | {anuncio.edad} años | {anuncio.distrito}
             </h1>
             <p className="mb-4">{anuncio.descripcion}</p>
 
