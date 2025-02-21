@@ -29,6 +29,39 @@ const PublicarAnuncio = () => {
     const [provincias, setProvincias] = useState<any[]>([]);
     const [distritos, setDistritos] = useState<any[]>([]);
 
+    const [horarios, setHorarios] = useState<{ dia: string; inicio: string; fin: string }[]>([])
+    const [diasSeleccionados, setDiasSeleccionados] = useState<string[]>([])
+    const [mismoHorario, setMismoHorario] = useState<boolean>(true);
+    const [horarioUnico, setHorarioUnico] = useState<{ inicio: string; fin: string }>({ inicio: "", fin: "" });
+
+
+
+
+    const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+
+    const agregarHorario = () => {
+        setHorarios([...horarios, { dia: "", inicio: "", fin: "" }])
+    }
+
+    const actualizarHorario = (index: number, key: string, value: string) => {
+        const nuevosHorarios = [...horarios];
+        nuevosHorarios[index] = { ...nuevosHorarios[index], [key]: value };
+        setHorarios(nuevosHorarios);
+    }
+
+    const eliminarHorario = (index: number) => {
+        setHorarios(horarios.filter((_, i) => i !== index));
+    }
+
+    const toggleDiaSeleccionado = (dia: string) => {
+        if (diasSeleccionados.includes(dia)) {
+            setDiasSeleccionados(diasSeleccionados.filter(d => d !== dia));
+        } else {
+            setDiasSeleccionados([...diasSeleccionados, dia]);
+        }
+    };
+
+
     useEffect(() => {
         const nuevasPrevias = imagenes.map((imagen) => URL.createObjectURL(imagen));
         setPrevias(nuevasPrevias);
@@ -145,6 +178,11 @@ const PublicarAnuncio = () => {
             return;
         }
 
+        if (horarios.length === 0 || horarios.some(h => !h.dia || !h.inicio || !h.fin)) {
+            toast.error("Por favor, completa o elimina los horarios vacíos.");
+            return;
+        }
+
         setSubiendo(true);
 
         try {
@@ -167,6 +205,7 @@ const PublicarAnuncio = () => {
                     departamento: departamentoNombre,
                     provincia: provinciaNombre,
                     distrito: distritoNombre,
+                    horarios,
                 },
                 { merge: true }
             );
@@ -183,6 +222,7 @@ const PublicarAnuncio = () => {
             setProvinciaNombre("");
             setDistritoId("");
             setDistritoNombre("");
+            setHorarios([])
         } catch (error) {
             console.error("Error al subir imágenes o guardar datos: ", error);
             toast.error("Hubo un error al guardar la información.");
@@ -192,8 +232,8 @@ const PublicarAnuncio = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#101828] p-4">
-            <div className="w-full max-w-md bg-gray-700 p-6 rounded shadow">
+        <div className="min-h-screen flex items-center justify-center bg-white text-[#101828] px-1 py-3">
+            <div className="w-full max-w-md rounded shadow">
                 <h2 className="text-2xl font-bold text-center mb-4">
                     PUBLICAR ANUNCIO
                 </h2>
@@ -202,7 +242,7 @@ const PublicarAnuncio = () => {
                 </h3>
                 <form onSubmit={manejarFormulario} className="space-y-4 mt-6">
                     <div>
-                        <label htmlFor="nombre" className="block text-white">
+                        <label htmlFor="nombre" className="block">
                             Nombre:
                         </label>
                         <input
@@ -215,7 +255,7 @@ const PublicarAnuncio = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="edad" className="block text-white">
+                        <label htmlFor="edad" className="block">
                             Edad:
                         </label>
                         <input
@@ -233,8 +273,9 @@ const PublicarAnuncio = () => {
                             onInput={(e) => e.currentTarget.setCustomValidity("")}
                         />
                     </div>
+
                     <div>
-                        <label htmlFor="numero" className="block text-white">
+                        <label htmlFor="numero" className="block">
                             Número de celular:
                         </label>
                         <input
@@ -252,7 +293,7 @@ const PublicarAnuncio = () => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="descripcion" className="block text-white">
+                        <label htmlFor="descripcion" className="block">
                             Descripción breve (40-200 caracteres):
                         </label>
                         <textarea
@@ -269,7 +310,7 @@ const PublicarAnuncio = () => {
                         </p>
                     </div>
                     <div>
-                        <label htmlFor="departamento" className="block text-white">
+                        <label htmlFor="departamento" className="block">
                             Departamento:
                         </label>
                         <select
@@ -297,7 +338,7 @@ const PublicarAnuncio = () => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="provincia" className="block text-white">
+                        <label htmlFor="provincia" className="block">
                             Provincia:
                         </label>
                         <select
@@ -326,7 +367,7 @@ const PublicarAnuncio = () => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="distrito" className="block text-white">
+                        <label htmlFor="distrito" className="block">
                             Distrito:
                         </label>
                         <select
@@ -354,6 +395,121 @@ const PublicarAnuncio = () => {
                             ))}
                         </select>
                     </div>
+                    <div className="border-2 border-[#101828] p-2">
+                        <h2 className="text-center font-bold mb-2 text-lg">HORARIOS DE ATENCIÓN</h2>
+                        <div className="mb-2">
+                            <p className="mb-2">¿Mismo horario para los días en que trabajas?</p>
+                            <label className="mr-2">
+                                <input
+                                    type="radio"
+                                    name="mismoHorario"
+                                    checked={mismoHorario}
+                                    onChange={() => setMismoHorario(true)}
+                                    className="mr-1"
+                                />
+                                Sí
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="mismoHorario"
+                                    checked={!mismoHorario}
+                                    onChange={() => setMismoHorario(false)}
+                                    className="mr-1"
+                                />
+                                No
+                            </label>
+                        </div>
+                    </div>
+
+                    {mismoHorario ? (
+                        // Modo "mismo horario": se muestra la selección de días y los inputs de hora únicos
+                        <>
+                            <div className="mb-2">
+                                <p className="text-white mb-1">Selecciona los días en que trabajas:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {diasSemana.map((dia) => (
+                                        <button
+                                            key={dia}
+                                            type="button"
+                                            onClick={() => toggleDiaSeleccionado(dia)}
+                                            className={`px-3 py-1 rounded ${diasSeleccionados.includes(dia)
+                                                    ? "bg-blue-500 text-white"
+                                                    : "bg-gray-300 text-black"
+                                                }`}
+                                        >
+                                            {dia}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:space-x-2 items-start sm:items-center mb-2">
+                                <input
+                                    type="time"
+                                    value={horarioUnico.inicio}
+                                    onChange={(e) =>
+                                        setHorarioUnico({ ...horarioUnico, inicio: e.target.value })
+                                    }
+                                    className="p-1 border rounded text-black w-full sm:w-auto"
+                                />
+                                <input
+                                    type="time"
+                                    value={horarioUnico.fin}
+                                    onChange={(e) =>
+                                        setHorarioUnico({ ...horarioUnico, fin: e.target.value })
+                                    }
+                                    className="p-1 border rounded text-black w-full sm:w-auto"
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        // Modo de horarios individuales (lo de tu código actual)
+                        <>
+                            {horarios.map((horario, index) => (
+                                <div key={index} className="flex flex-col sm:flex-row sm:space-x-2 items-start sm:items-center mb-2">
+                                    <select
+                                        value={horario.dia}
+                                        onChange={(e) => actualizarHorario(index, "dia", e.target.value)}
+                                        className="p-1 border rounded text-black w-full sm:w-auto"
+                                    >
+                                        <option value="">Día</option>
+                                        {diasSemana.map((dia) => (
+                                            <option key={dia} value={dia}>
+                                                {dia}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <input
+                                        type="time"
+                                        value={horario.inicio}
+                                        onChange={(e) => actualizarHorario(index, "inicio", e.target.value)}
+                                        className="p-1 border rounded text-black w-full sm:w-auto"
+                                    />
+                                    <input
+                                        type="time"
+                                        value={horario.fin}
+                                        onChange={(e) => actualizarHorario(index, "fin", e.target.value)}
+                                        className="p-1 border rounded text-black w-full sm:w-auto"
+                                    />
+                                    <button
+                                        onClick={() => eliminarHorario(index)}
+                                        className="p-1 bg-red-500 text-white rounded"
+                                    >
+                                        ✖
+                                    </button>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={agregarHorario}
+                                className="p-2 bg-blue-500 text-white rounded"
+                            >
+                                Agregar horario +
+                            </button>
+                        </>
+                    )}
+
+
                     <div>
                         <label htmlFor="imagenes" className="block text-white">
                             Subir Imágenes (mínimo 3):
