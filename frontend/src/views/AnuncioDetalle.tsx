@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Slider from "react-slick";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 // Interfaz para tipar el anuncio (ajústala según tus necesidades)
 interface Anuncio {
@@ -16,9 +16,14 @@ interface Anuncio {
     descripcion: string;
     email: string;
     imagenes: string[];
-    actualizado: any;
     distrito: string;
+    departamento: string;
 }
+
+interface ArrowProps {
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
+}
+  
 
 const AnuncioDetalle = () => {
     const { id } = useParams<{ id: string }>();
@@ -54,27 +59,27 @@ const AnuncioDetalle = () => {
     }
 
     // Flechas personalizadas
-    const PrevArrow = ({ onClick }: any) => (
+    const PrevArrow: React.FC<ArrowProps> = ({ onClick }) => (
         <div
-            className="absolute z-10 w-10 h-10 left-0 top-1/2 transform -translate-y-1/2 p-2 text-white bg-red-600 rounded-full flex items-center justify-center"
+            className="absolute z-10 w-10 h-10 left-0 bottom-2 text-white bg-[#CC3C39] rounded-e-lg flex items-center justify-center cursor-pointer"
             onClick={onClick}
         >
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <FontAwesomeIcon icon={faArrowLeft} className="text-3xl" />
         </div>
     );
 
-    const NextArrow = ({ onClick }: any) => (
+    const NextArrow: React.FC<ArrowProps> = ({ onClick }) => (
         <div
-            className="absolute z-10 w-10 h-10 right-0 top-1/2 transform -translate-y-1/2 text-white bg-red-600 rounded-full flex  items-center justify-center"
+            className="absolute z-10 w-10 h-10 right-0 bottom-2 text-white bg-[#CC3C39] rounded-s-lg flex items-center justify-center cursor-pointer"
             onClick={onClick}
         >
-            <FontAwesomeIcon icon={faArrowRight} />
+            <FontAwesomeIcon icon={faArrowRight} className="text-3xl" />
         </div>
     );
 
     // Configuración del Slider
     const sliderSettings = {
-        dots: true,          // Mostrar puntos de navegación
+        dots: false,          // Mostrar puntos de navegación
         infinite: true,      // Desplazamiento infinito
         speed: 500,          // Velocidad de transición
         slidesToShow: 1,     // Mostrar solo una imagen por vez
@@ -86,31 +91,37 @@ const AnuncioDetalle = () => {
     };
 
     return (
-        <div className="p-4">
+        <div className="bg-white">
             {/* Botón de cerrar / regresar a anuncios */}
-            <Link to="/" className="absolute z-10 top-5 right-5 w-10 h-10 flex justify-center items-center bg-red-600 rounded-full">
-                <span className="text-xl font-bold">X</span>
+            <Link to="/" className="absolute z-10 top-0 right-0 w-10 h-10 flex justify-center items-center bg-[#CC3C39] rounded-es-lg">
+                {/* <span className="text-xl font-bold">X</span> */}
+                <FontAwesomeIcon icon={faXmark} className="text-3xl" />
             </Link>
 
             {/* Mostrar imagen ampliada (o un slider si hay varias imágenes) */}
             {anuncio.imagenes && anuncio.imagenes.length > 0 && (
                 <Slider {...sliderSettings}>
                     {anuncio.imagenes.map((imagen, index) => (
-                        <div key={index} className="w-max-[288px] h-[384px] mb-4">
+                        <div key={index} className="w-max-[288px] h-[480px]">
                             <img
                                 src={imagen}
                                 alt={`${anuncio.nombre} - imagen ${index + 1}`}
-                                className="w-full h-full object-cover   rounded"
+                                className="w-full h-full object-cover"
                             />
                         </div>
                     ))}
                 </Slider>
             )}
-
-            <h1 className="text-lg font-bold mb-2 text-white">
-                {anuncio.nombre} | {anuncio.edad} años | {anuncio.distrito}
-            </h1>
-            <p className="mb-4">{anuncio.descripcion}</p>
+            <div className="p-3">
+                <h2 className="text-xl font-bold mb-2 text-[#101828]">
+                    {anuncio.nombre} {anuncio.numero}, {anuncio.descripcion}.
+                </h2>
+                <div className="mb-40 flex gap-2">
+                    <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.departamento}</span>
+                    <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.distrito}</span>
+                    <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.edad} años</span>
+                </div>
+            </div>
 
             {/* Sección de contacto vía WhatsApp */}
             <div className="fixed bottom-0 left-0 right-0 flex justify-center items-center space-x-2 py-3 font-bold bg-[#52CD5F]">
