@@ -13,6 +13,7 @@ const PublicarAnuncio = () => {
     const [edad, setEdad] = useState<string>("");
     const [numero, setNumero] = useState<string>("")
     const [descripcion, setDescripcion] = useState<string>("")
+    const [texto, setTexto] = useState<string>("");
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
@@ -140,13 +141,6 @@ const PublicarAnuncio = () => {
         });
     };
 
-    const manejarCambioDescripcion = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const texto = e.target.value;
-        if (texto.length <= 200) {
-            setDescripcion(texto);
-        }
-    };
-
     const manejarFormulario = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -223,6 +217,7 @@ const PublicarAnuncio = () => {
             setDistritoId("");
             setDistritoNombre("");
             setHorarios([])
+            setTexto("")
         } catch (error) {
             console.error("Error al subir imágenes o guardar datos: ", error);
             toast.error("Hubo un error al guardar la información.");
@@ -241,39 +236,76 @@ const PublicarAnuncio = () => {
                     Completa la información requerida para poder publicar tu anuncio.
                 </h3>
                 <form onSubmit={manejarFormulario} className="space-y-4 mt-6">
-                    <div>
-                        <label htmlFor="nombre" className="block">
-                            Nombre:
-                        </label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            className="mt-1 block w-full p-2 rounded text-black"
-                            required
-                        />
+                    <div className="border-2 border-[#101828] p-2 space-y-5">
+                        <h2 className="text-center font-bold mb-2 text-lg">PRESENTACIÓN</h2>
+                        <div>
+                            <label htmlFor="nombre" className="font-bold">
+                                Nombre:
+                            </label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                className="mt-1 block w-full p-2 rounded border-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="edad" className="font-bold">
+                                Edad:
+                            </label>
+                            <input
+                                type="number"
+                                id="edad"
+                                value={edad}
+                                onChange={(e) => setEdad(e.target.value)}
+                                className="mt-1 block w-full p-2 rounded border-2"
+                                min="18"
+                                max="99"
+                                required
+                                onInvalid={(e) =>
+                                    e.currentTarget.setCustomValidity("Debes ser mayor de 18 años para publicar un anuncio")
+                                }
+                                onInput={(e) => e.currentTarget.setCustomValidity("")}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="descripcion" className="font-bold">
+                                Título:
+                            </label>
+                            <textarea
+                                id="descripcion"
+                                value={descripcion}
+                                onChange={(e) => setDescripcion(e.target.value)}
+                                className="mt-1 border-2 w-full p-2 rounded text-black resize-none"
+                                rows={2}
+                                required
+                                maxLength={60}
+                                placeholder="Ejemplo: Una rica señorita con senos, nalgas grandes y redondas."
+                            />
+                            <p className={`text-xs text-end ${descripcion.length >= 40 ? "text-[#00AA00]" : "text-[#FF0000]"}`}>
+                                Llevas {descripcion.length} caracteres. {descripcion.length < 40 && "El mínimo son 40."}
+                                {descripcion.length > 40 && "El máximo son 60."}
+                            </p>
+                        </div>
+                        <div>
+                            <label htmlFor="texto" className="font-bold">
+                                Texto:
+                            </label>
+                            <textarea
+                                id="texto"
+                                value={texto}
+                                onChange={(e) => setTexto(e.target.value)}
+                                className="mt-1 border-2 w-full p-2 rounded text-black resize-none"
+                                rows={5}
+                                required
+                            />
+                            <p className={`text-xs text-end ${texto.length >= 250 ? "text-[#00AA00]" : "text-[#FF0000]"}`}>
+                                Llevas {texto.length} caracteres. {texto.length < 250 && "El mínimo son 250."}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <label htmlFor="edad" className="block">
-                            Edad:
-                        </label>
-                        <input
-                            type="number"
-                            id="edad"
-                            value={edad}
-                            onChange={(e) => setEdad(e.target.value)}
-                            className="mt-1 block w-full p-2 rounded text-black"
-                            min="18"
-                            max="99"
-                            required
-                            onInvalid={(e) =>
-                                e.currentTarget.setCustomValidity("Debes ser mayor de 18 años para publicar un anuncio")
-                            }
-                            onInput={(e) => e.currentTarget.setCustomValidity("")}
-                        />
-                    </div>
-
                     <div>
                         <label htmlFor="numero" className="block">
                             Número de celular:
@@ -292,23 +324,7 @@ const PublicarAnuncio = () => {
                             onInput={(e) => e.currentTarget.setCustomValidity("")}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="descripcion" className="block">
-                            Descripción breve (40-200 caracteres):
-                        </label>
-                        <textarea
-                            id="descripcion"
-                            value={descripcion}
-                            onChange={manejarCambioDescripcion}
-                            className="mt-1 block w-full p-2 rounded text-black resize-none"
-                            rows={3}
-                            required
-                            placeholder="Escribe una descripción breve sobre ti (mínimo 40 caracteres)"
-                        />
-                        <p className="text-sm text-gray-300 mt-1">
-                            {descripcion.length} / 200 caracteres
-                        </p>
-                    </div>
+
                     <div>
                         <label htmlFor="departamento" className="block">
                             Departamento:
@@ -434,8 +450,8 @@ const PublicarAnuncio = () => {
                                             type="button"
                                             onClick={() => toggleDiaSeleccionado(dia)}
                                             className={`px-3 py-1 rounded ${diasSeleccionados.includes(dia)
-                                                    ? "bg-blue-500 text-white"
-                                                    : "bg-gray-300 text-black"
+                                                ? "bg-blue-500 text-white"
+                                                : "bg-gray-300 text-black"
                                                 }`}
                                         >
                                             {dia}
