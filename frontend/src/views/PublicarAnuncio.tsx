@@ -9,6 +9,7 @@ import provinciasData from "../data/ubigeo_peru_2016_provincias.json";
 import distritosData from "../data/ubigeo_peru_2016_distritos.json"
 
 const PublicarAnuncio = () => {
+    const [genero, setGenero] = useState<string>("")
     const [nombre, setNombre] = useState<string>("");
     const [edad, setEdad] = useState<string>("");
     const [numero, setNumero] = useState<string>("")
@@ -162,6 +163,11 @@ const PublicarAnuncio = () => {
             return;
         }
 
+        if (!genero) {
+            toast.error("Debes seleccionar tu género.");
+            return;
+        }
+
         if (!departamentoId || !provinciaId || !distritoId) {
             toast.error("Debes seleccionar tu departamento, provincia y distrito.");
             return;
@@ -205,6 +211,7 @@ const PublicarAnuncio = () => {
             await setDoc(
                 doc(db, "usuarios", user.uid),
                 {
+                    genero,
                     nombre,
                     edad: edadNumero,
                     numero: Number(numero),
@@ -220,6 +227,7 @@ const PublicarAnuncio = () => {
                 { merge: true }
             );
             toast.success("Información guardada correctamente");
+            setGenero("")
             setNombre("");
             setEdad("");
             setNumero("");
@@ -253,8 +261,126 @@ const PublicarAnuncio = () => {
                 </h3>
             </div>
             <form onSubmit={manejarFormulario} className="space-y-4">
-                <div className="border-[1px] border-[#101828] bg-white p-2">
-                    <h2 className="text-center font-bold mb-2 text-lg">CONTACTO</h2>
+                <div className="border border-[#101828] bg-white p-2 space-y-5">
+                    <div>
+                        <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">DÓNDE ANUNCIARTE</h2>
+                        <p className="font-bold">Tú eres:</p>
+                        <div className="flex gap-x-4 mt-1">
+                            <button
+                                type="button"
+                                onClick={() => setGenero("mujer")}
+                                className={`px-3 py-1 border rounded ${genero === "mujer" ? "bg-[#101828] text-white" : "bg-white text-black"
+                                    }`}
+                            >
+                                Mujer
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setGenero("travesti")}
+                                className={`px-3 py-1 border rounded ${genero === "travesti" ? "bg-[#101828] text-white" : "bg-white text-black"
+                                    }`}
+                            >
+                                Travesti
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setGenero("hombre")}
+                                className={`px-3 py-1 border rounded ${genero === "hombre" ? "bg-[#101828] text-white" : "bg-white text-black"
+                                    }`}
+                            >
+                                Hombre
+                            </button>
+                        </div>
+                    </div>
+                    <div className="mt-1">
+                        <label htmlFor="departamento" className="font-bold">
+                            Departamento:
+                        </label>
+                        <select
+                            id="departamento"
+                            value={departamentoId}
+                            onChange={(e) => {
+                                const selectedDepartment = departamentosData.find(dep => dep.id === e.target.value);
+                                if (selectedDepartment) {
+                                    setDepartamentoId(selectedDepartment.id);
+                                    setDepartamentoNombre(selectedDepartment.name);
+                                } else {
+                                    setDepartamentoId("");
+                                    setDepartamentoNombre("");
+                                }
+                            }}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            required
+                        >
+                            <option value="">Selecciona un departamento</option>
+                            {departamentosData.map(dep => (
+                                <option key={dep.id} value={dep.id}>
+                                    {dep.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="provincia" className="font-bold">
+                            Provincia:
+                        </label>
+                        <select
+                            id="provincia"
+                            value={provinciaId}
+                            onChange={(e) => {
+                                const selectedProvince = provincias.find((p) => p.id === e.target.value);
+                                if (selectedProvince) {
+                                    setProvinciaId(selectedProvince.id);
+                                    setProvinciaNombre(selectedProvince.name);
+                                } else {
+                                    setProvinciaId("");
+                                    setProvinciaNombre("");
+                                }
+                            }}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            required
+                            disabled={!departamentoId}
+                        >
+                            <option value="">Selecciona una provincia</option>
+                            {provincias.map(prov => (
+                                <option key={prov.id} value={prov.id}>
+                                    {prov.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="distrito" className="font-bold">
+                            Distrito:
+                        </label>
+                        <select
+                            id="distrito"
+                            value={distritoId}
+                            onChange={(e) => {
+                                const selectedDistrict = distritos.find((d) => d.id === e.target.value);
+                                if (selectedDistrict) {
+                                    setDistritoId(selectedDistrict.id);
+                                    setDistritoNombre(selectedDistrict.name);
+                                } else {
+                                    setDistritoId("");
+                                    setDistritoNombre("");
+                                }
+                            }}
+                            className="mt-1 block w-full p-2 rounded text-black"
+                            disabled={!provinciaId}
+                            required
+                        >
+                            <option value="">Selecciona un distrito</option>
+                            {distritos.map((d) => (
+                                <option key={d.id} value={d.id}>
+                                    {d.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                <div className="border border-[#101828] bg-white p-2">
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">CONTACTO</h2>
                     <label htmlFor="numero" className="font-bold">
                         Número de celular:
                     </label>
@@ -270,10 +396,11 @@ const PublicarAnuncio = () => {
                         onInvalid={(e) => {
                             e.currentTarget.setCustomValidity("El número debe ser de 9 dígitos")
                         }}
+                        onInput={(e) => e.currentTarget.setCustomValidity("")}
                     />
                 </div>
-                <div className="border-[1px] border-[#101828] bg-white p-2 space-y-5">
-                    <h2 className="text-center font-bold mb-2 text-lg">PRESENTACIÓN</h2>
+                <div className="border border-[#101828] bg-white p-2 space-y-5">
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">PRESENTACIÓN</h2>
                     <div>
                         <label htmlFor="nombre" className="font-bold">
                             Nombre:
@@ -367,94 +494,9 @@ const PublicarAnuncio = () => {
                         </p>
                     </div>
                 </div>
-                <div>
-                    <label htmlFor="departamento" className="block">
-                        Departamento:
-                    </label>
-                    <select
-                        id="departamento"
-                        value={departamentoId}
-                        onChange={(e) => {
-                            const selectedDepartment = departamentosData.find(dep => dep.id === e.target.value);
-                            if (selectedDepartment) {
-                                setDepartamentoId(selectedDepartment.id);
-                                setDepartamentoNombre(selectedDepartment.name);
-                            } else {
-                                setDepartamentoId("");
-                                setDepartamentoNombre("");
-                            }
-                        }}
-                        className="mt-1 block w-full p-2 rounded text-black"
-                        required
-                    >
-                        <option value="">Selecciona un departamento</option>
-                        {departamentosData.map(dep => (
-                            <option key={dep.id} value={dep.id}>
-                                {dep.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="provincia" className="block">
-                        Provincia:
-                    </label>
-                    <select
-                        id="provincia"
-                        value={provinciaId}
-                        onChange={(e) => {
-                            const selectedProvince = provincias.find((p) => p.id === e.target.value);
-                            if (selectedProvince) {
-                                setProvinciaId(selectedProvince.id);
-                                setProvinciaNombre(selectedProvince.name);
-                            } else {
-                                setProvinciaId("");
-                                setProvinciaNombre("");
-                            }
-                        }}
-                        className="mt-1 block w-full p-2 rounded text-black"
-                        required
-                        disabled={!departamentoId}
-                    >
-                        <option value="">Selecciona una provincia</option>
-                        {provincias.map(prov => (
-                            <option key={prov.id} value={prov.id}>
-                                {prov.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label htmlFor="distrito" className="block">
-                        Distrito:
-                    </label>
-                    <select
-                        id="distrito"
-                        value={distritoId}
-                        onChange={(e) => {
-                            const selectedDistrict = distritos.find((d) => d.id === e.target.value);
-                            if (selectedDistrict) {
-                                setDistritoId(selectedDistrict.id);
-                                setDistritoNombre(selectedDistrict.name);
-                            } else {
-                                setDistritoId("");
-                                setDistritoNombre("");
-                            }
-                        }}
-                        className="mt-1 block w-full p-2 rounded text-black"
-                        disabled={!provinciaId}
-                        required
-                    >
-                        <option value="">Selecciona un distrito</option>
-                        {distritos.map((d) => (
-                            <option key={d.id} value={d.id}>
-                                {d.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="border-[1px] border-[#101828] p-2">
-                    <h2 className="text-center font-bold mb-2 text-lg">HORARIOS DE ATENCIÓN</h2>
+
+                <div className="border border-[#101828] p-2">
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">HORARIOS DE ATENCIÓN</h2>
                     <div className="mb-2">
                         <p className="mb-2">¿Mismo horario para los días en que trabajas?</p>
                         <label className="mr-2">
@@ -478,13 +520,11 @@ const PublicarAnuncio = () => {
                             No
                         </label>
                     </div>
-                </div>
-
-                {mismoHorario ? (
+                    {mismoHorario ? (
                     // Modo "mismo horario": se muestra la selección de días y los inputs de hora únicos
                     <>
                         <div className="mb-2">
-                            <p className="text-white mb-1">Selecciona los días en que trabajas:</p>
+                            <p className="mb-1">Selecciona los días en que trabajas:</p>
                             <div className="flex flex-wrap gap-2">
                                 {diasSemana.map((dia) => (
                                     <button
@@ -560,12 +600,15 @@ const PublicarAnuncio = () => {
                         <button
                             type="button"
                             onClick={agregarHorario}
-                            className="p-2 bg-blue-500 text-white rounded"
+                            className="p-2 bg-blue-500 rounded"
                         >
                             Agregar horario +
                         </button>
                     </>
                 )}
+                </div>
+
+                
 
 
                 <div>
