@@ -51,28 +51,28 @@ const Anuncios = () => {
     }
 
     return (
-        <div className="grid grid-cols-2 gap-2 p-2">
+        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 p-2">
             {anuncios.map((anuncio) => (
                 <Link
-                to={`/anuncio/${anuncio.id}`}
-                key={anuncio.id}
-                className="rounded-md overflow-hidden"
-            >
-                {/* Contenedor de la imagen con posición relativa para superponer el overlay */}
-                {anuncio.imagenes && anuncio.imagenes.length > 0 && (
-                    <div className="relative w-full h-64">
-                        <img
-                            src={anuncio.imagenes[0]}
-                            alt={`${anuncio.nombre} - imagen`}
-                            className="w-full h-full object-cover"
-                        />
-                        {/* Overlay con nombre y edad en la parte inferior */}
-                        <div className="absolute bottom-1 left-1 flex justify-center items-center bg-black bg-opacity-50 text-white py-1 px-2 rounded-md">
-                            <span className="text-xs font-bold">{anuncio.edad} años</span>
+                    to={`/anuncio/${anuncio.id}`}
+                    key={anuncio.id}
+                >
+                    {anuncio.imagenes && anuncio.imagenes.length > 0 && (
+                        <div className="relative w-full aspect-[9/16] lg:aspect-[3/4]">
+
+                            <img
+                                src={anuncio.imagenes[0]}
+                                alt={`${anuncio.nombre} - imagen`}
+                                className="w-full h-full object-cover"
+                            />
+                            {/* Overlay con nombre y edad en la parte inferior */}
+                            <div className="absolute bottom-1 left-1 flex justify-center items-center bg-black bg-opacity-50 text-white py-1 px-2 rounded-md">
+                                <span className="text-xs font-bold">{anuncio.edad} años</span>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </Link>
+
+                    )}
+                </Link>
             ))}
         </div>
     );

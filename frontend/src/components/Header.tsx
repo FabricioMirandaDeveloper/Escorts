@@ -9,11 +9,11 @@ export default function Header() {
             <div className="flex justify-start items-center font-bold text-2xl">
                 <Link to="/" className="flex items-center">
                     <h1 className="text-white mr-2">PROYECTO</h1>
-                    <FontAwesomeIcon icon={faFire} className="text-[#EA580C]" />
+                    <FontAwesomeIcon icon={faFire} className="text-[#CA1E25]" />
                 </Link>
             </div>
             <div>
-                <button className="bg-[#EA580C] p-2 rounded-lg text-sm font-bold" onClick={() => navigate("/login")}>Publicar anuncio</button>
+                <button className="bg-[#CA1E25] p-2 rounded-lg text-sm font-bold" onClick={() => navigate("/login")}>Publicar anuncio</button>
             </div>
         </header>
     )
