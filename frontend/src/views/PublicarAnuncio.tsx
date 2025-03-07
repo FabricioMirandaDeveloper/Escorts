@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTimes, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
 import departamentosData from "../data/ubigeo_peru_2016_departamentos.json";
 import provinciasData from "../data/ubigeo_peru_2016_provincias.json";
 import distritosData from "../data/ubigeo_peru_2016_distritos.json"
@@ -265,9 +265,9 @@ const PublicarAnuncio = () => {
             </div>
             <form onSubmit={manejarFormulario} className="space-y-4">
                 {/* Donde Anunciarte */}
-                <div className="border border-[#101828] bg-white p-2 space-y-5"> 
+                <div className="border border-[#101828] bg-white p-2 space-y-5">
                     <div>
-                        <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">DÓNDE ANUNCIARTE</h2>
+                        <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">DÓNDE ANUNCIARTE</h2>
                         <p className="font-bold">Tú eres:</p>
                         <div className="flex gap-x-4 mt-1">
                             <button
@@ -385,7 +385,7 @@ const PublicarAnuncio = () => {
                 </div>
                 {/* Contacto */}
                 <div className="border border-[#101828] bg-white p-2">
-                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">CONTACTO</h2>
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">CONTACTO</h2>
                     <label htmlFor="numero" className="font-bold">
                         Número de celular:
                     </label>
@@ -406,7 +406,7 @@ const PublicarAnuncio = () => {
                 </div>
                 {/* Presentacion */}
                 <div className="border border-[#101828] bg-white p-2 space-y-5">
-                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">PRESENTACIÓN</h2>
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">PRESENTACIÓN</h2>
                     <div>
                         <label htmlFor="nombre" className="font-bold">
                             Nombre:
@@ -502,7 +502,7 @@ const PublicarAnuncio = () => {
                 </div>
                 {/* Horarios de Atencion */}
                 <div className="border border-[#101828] p-2">
-                    <h2 className="text-center font-bold mb-2 text-lg text-[#EA580C]">HORARIOS DE ATENCIÓN</h2>
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">HORARIOS DE ATENCIÓN</h2>
                     <div className="mb-2">
                         <p className="mb-2">¿Mismo horario para los días en que trabajas?</p>
                         <label className="mr-2">
@@ -530,16 +530,16 @@ const PublicarAnuncio = () => {
                         // Modo "mismo horario": se muestra la selección de días y los inputs de hora únicos
                         <>
                             <div className="mb-2">
-                                <p className="mb-1">Selecciona los días en que trabajas:</p>
+                                <p className="mb-2">Selecciona los días en que trabajas:</p>
                                 <div className="flex flex-wrap gap-2">
                                     {diasSemana.map((dia) => (
                                         <button
                                             key={dia}
                                             type="button"
                                             onClick={() => toggleDiaSeleccionado(dia)}
-                                            className={`px-3 py-1 rounded ${diasSeleccionados.includes(dia)
-                                                ? "bg-blue-500 text-white"
-                                                : "bg-gray-300 text-black"
+                                            className={`px-3 py-1 rounded border-2 ${diasSeleccionados.includes(dia)
+                                                ? "bg-[#101828] text-white"
+                                                : " text-black"
                                                 }`}
                                         >
                                             {dia}
@@ -558,7 +558,7 @@ const PublicarAnuncio = () => {
                                     className="p-1 border-2 rounded"
                                 />
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center mt-3">
                                 <p className="w-3/6">Hora de Termino:</p>
                                 <input
                                     type="time"
@@ -574,91 +574,130 @@ const PublicarAnuncio = () => {
                         // Modo de horarios individuales (lo de tu código actual)
                         <>
                             {horarios.map((horario, index) => (
-                                <div key={index} className="flex flex-col sm:flex-row sm:space-x-2 items-start sm:items-center mb-2">
-                                    <select
-                                        value={horario.dia}
-                                        onChange={(e) => actualizarHorario(index, "dia", e.target.value)}
-                                        className="p-1 border rounded text-black w-full sm:w-auto"
-                                    >
-                                        <option value="">Día</option>
-                                        {diasSemana.map((dia) => (
-                                            <option key={dia} value={dia}>
-                                                {dia}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <input
-                                        type="time"
-                                        value={horario.inicio}
-                                        onChange={(e) => actualizarHorario(index, "inicio", e.target.value)}
-                                        className="p-1 border rounded text-black w-full sm:w-auto"
-                                    />
-                                    <input
-                                        type="time"
-                                        value={horario.fin}
-                                        onChange={(e) => actualizarHorario(index, "fin", e.target.value)}
-                                        className="p-1 border rounded text-black w-full sm:w-auto"
-                                    />
+                                <div key={index} className="flex flex-col items-start gap-y-3 mb-4 border p-4 border-[#101828] rounded relative">
                                     <button
                                         onClick={() => eliminarHorario(index)}
-                                        className="p-1 bg-red-500 text-white rounded"
+                                        className="px-1.5 py-0.5 bg-[#CC3C39] text-white rounded absolute top-2 right-2"
                                     >
-                                        ✖
+                                        <FontAwesomeIcon icon={faXmark} />
                                     </button>
+                                    <div className="flex items-center gap-x-2 mt-10">
+                                        <p className="w-32">Día {index + 1}:</p>
+                                        <select
+                                            value={horario.dia}
+                                            onChange={(e) => actualizarHorario(index, "dia", e.target.value)}
+                                            className="border-2 py-1 rounded"
+                                        >
+                                            <option value="">Escoge un día</option>
+                                            {diasSemana.map((dia) => (
+                                                <option key={dia} value={dia}>
+                                                    {dia}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex items-center gap-x-2">
+                                        <label htmlFor={`inicio-${index}`} className="w-32">
+                                            Horario de Inicio:
+                                        </label>
+                                        <input
+                                            id={`inicio-${index}`}
+                                            type="time"
+                                            value={horario.inicio}
+                                            onChange={(e) => actualizarHorario(index, "inicio", e.target.value)}
+                                            className="p-1 border-2 rounded"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-x-2">
+                                        <label htmlFor={`fin-${index}`} className="w-32">
+                                            Horario de Salida:
+                                        </label>
+                                        <input
+                                            id={`fin-${index}`}
+                                            type="time"
+                                            value={horario.fin}
+                                            onChange={(e) => actualizarHorario(index, "fin", e.target.value)}
+                                            className="p-1 border-2 rounded"
+                                        />
+
+                                    </div>
+
                                 </div>
                             ))}
-                            <button
-                                type="button"
-                                onClick={agregarHorario}
-                                className="p-2 bg-blue-500 rounded"
-                            >
-                                Agregar horario +
-                            </button>
+
+                            <div className="flex justify-center items-center mt-4">
+                                <button
+                                    type="button"
+                                    onClick={agregarHorario}
+                                    className="px-3 py-1 bg-[#101828] text-white rounded"
+                                >
+                                    Agregar horario
+                                </button>
+                            </div>
                         </>
                     )}
                 </div>
                 <div className="border border-[#101828] p-2">
-                    <label htmlFor="imagenes">
+                <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">FOTOS</h2>
+                    <label htmlFor="imagenes" className="font-bold">
                         Subir Imágenes (mínimo 3):
                     </label>
-                    <input
-                        type="file"
-                        id="imagenes"
-                        accept="image/*"
-                        multiple
-                        onChange={manejarCambioImagenes}
-                        className="mt-1 block w-full p-2 rounded bg-white text-black"
-                    />
-                    {/* Vista previa de imágenes */}
-                {previas.length > 0 && (
-                    <div className="mt-4 flex gap-2 flex-wrap">
-                        {previas.map((src, index) => (
-                            <div key={index} className="relative">
-                                <img
-                                    src={src}
-                                    alt={`Vista previa ${index + 1}`}
-                                    className="w-24 h-24 object-cover rounded-md border border-gray-300"
-                                />
-                                {/* Botón para eliminar la imagen */}
-                                <button
-                                    onClick={() => eliminarImagen(index)}
-                                    type="button"
-                                    className="absolute top-0 right-0 flex items-center justify-center  bg-red-500 text-white text-xs rounded-full w-6 h-6"
-                                >
-                                    <FontAwesomeIcon icon={faTimes} className="w-3 h-3" />
-                                </button>
-                            </div>
-                        ))}
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                        <input
+                            type="file"
+                            id="imagenes"
+                            accept="image/*"
+                            multiple
+                            onChange={manejarCambioImagenes}
+                            className="hidden"
+                        />
+                        <label htmlFor="imagenes" className="flex flex-col items-center justify-center w-full border border-[#101828] px-2 py-8 cursor-pointer border-dashed">
+                            <FontAwesomeIcon icon={faUpload} className="text-3xl mb-3" />
+                            <span>Subir foto</span>
+                        </label>
+                        <label htmlFor="imagenes" className="flex flex-col items-center justify-center w-full border border-[#101828] px-2 py-8 cursor-pointer border-dashed">
+                            <FontAwesomeIcon icon={faUpload} className="text-3xl mb-3" />
+                            <span>Subir foto</span>
+                        </label>
+                        <label htmlFor="imagenes" className="flex flex-col items-center justify-center w-full border border-[#101828] px-2 py-8 cursor-pointer border-dashed">
+                            <FontAwesomeIcon icon={faUpload} className="text-3xl mb-3" />
+                            <span>Subir foto</span>
+                        </label>
+                        <label htmlFor="imagenes" className="flex flex-col items-center justify-center w-full border border-[#101828] px-2 py-8 cursor-pointer border-dashed">
+                            <FontAwesomeIcon icon={faUpload} className="text-3xl mb-3" />
+                            <span>Subir foto</span>
+                        </label>
                     </div>
-                )}
+                    {/* Vista previa de imágenes */}
+                    {previas.length > 0 && (
+                        <div className="mt-4 flex gap-2 flex-wrap">
+                            {previas.map((src, index) => (
+                                <div key={index} className="relative">
+                                    <img
+                                        src={src}
+                                        alt={`Vista previa ${index + 1}`}
+                                        className="w-24 h-24 object-cover rounded-md border border-gray-300"
+                                    />
+                                    {/* Botón para eliminar la imagen */}
+                                    <button
+                                        onClick={() => eliminarImagen(index)}
+                                        type="button"
+                                        className="absolute top-0 right-0 flex items-center justify-center  bg-red-500 text-white text-xs rounded-full w-6 h-6"
+                                    >
+                                        <FontAwesomeIcon icon={faTimes} className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                
+
 
                 <button
                     type="submit"
                     disabled={subiendo}
-                    className="w-full flex justify-center rounded-md px-3 py-2 font-semibold text-white bg-[#EA580C] hover:bg-[#FF6B35]"
+                    className="w-full flex justify-center rounded-md px-3 py-2 font-semibold text-white bg-[#CA1E25] hover:bg-[#CC3C39]"
                 >
                     {subiendo ? "Subiendo..." : "Publicar Anuncio"}
                 </button>
