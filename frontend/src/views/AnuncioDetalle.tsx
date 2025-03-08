@@ -14,6 +14,7 @@ interface Anuncio {
     edad: number;
     numero: number;
     descripcion: string;
+    texto: string
     email: string;
     imagenes: string[];
     distrito: string;
@@ -23,7 +24,6 @@ interface Anuncio {
 interface ArrowProps {
     onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
-  
 
 const AnuncioDetalle = () => {
     const { id } = useParams<{ id: string }>();
@@ -64,7 +64,7 @@ const AnuncioDetalle = () => {
             className="absolute z-10 w-10 h-10 left-0 bottom-2 text-white bg-[#CC3C39] rounded-e-lg flex items-center justify-center cursor-pointer"
             onClick={onClick}
         >
-            <FontAwesomeIcon icon={faArrowLeft} className="text-3xl" />
+            <FontAwesomeIcon icon={faArrowLeft} className="text-3xl rounded-e-lg"/>
         </div>
     );
 
@@ -85,7 +85,7 @@ const AnuncioDetalle = () => {
         slidesToShow: 1,     // Mostrar solo una imagen por vez
         slidesToScroll: 1,   // Desplazar una imagen a la vez
         autoplay: true,      // Autoplay para cambiar automáticamente de imagen
-        autoplaySpeed: 3000, // Intervalo de tiempo entre las transiciones
+        autoplaySpeed: 5000, // Intervalo de tiempo entre las transiciones
         prevArrow: <PrevArrow />,
         nextArrow: <NextArrow />,
     };
@@ -102,7 +102,7 @@ const AnuncioDetalle = () => {
             {anuncio.imagenes && anuncio.imagenes.length > 0 && (
                 <Slider {...sliderSettings}>
                     {anuncio.imagenes.map((imagen, index) => (
-                        <div key={index} className="w-max-[288px] h-[480px]">
+                        <div key={index} className="h-[480px] min-w-[320px] max-w-[320px]">
                             <img
                                 src={imagen}
                                 alt={`${anuncio.nombre} - imagen ${index + 1}`}
@@ -113,13 +113,16 @@ const AnuncioDetalle = () => {
                 </Slider>
             )}
             <div className="p-3">
-                <h2 className="text-xl font-bold mb-2 text-[#101828]">
-                    {anuncio.nombre} {anuncio.numero}, {anuncio.descripcion}.
+                <h2 className="text-xl font-bold mb-2 text-[#101828] overflow-hidden">
+                    {anuncio.nombre} {anuncio.numero}, {anuncio.descripcion}
                 </h2>
                 <div className="mb-40 flex gap-2">
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.departamento}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.distrito}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.edad} años</span>
+                </div>
+                <div>
+                    <p>{anuncio.texto}</p>
                 </div>
             </div>
 
@@ -127,7 +130,7 @@ const AnuncioDetalle = () => {
             <div className="fixed bottom-0 left-0 right-0 flex justify-center items-center space-x-2 py-3 font-bold bg-[#52CD5F]">
                 <FontAwesomeIcon icon={faWhatsapp} style={{ color: "white", fontSize: "30px" }} />
                 <a
-                    href={`https://wa.me/${anuncio.numero}`}
+                    href={`https://wa.me/51${anuncio.numero}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white"

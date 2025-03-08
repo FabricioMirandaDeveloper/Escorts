@@ -219,6 +219,7 @@ const PublicarAnuncio = () => {
                     edad: Number(edad),
                     numero: Number(numero),
                     descripcion,
+                    texto,
                     email: user.email,
                     imagenes: imagenesBase64,
                     actualizado: new Date(),
