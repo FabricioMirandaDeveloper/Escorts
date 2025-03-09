@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTimes, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
 import departamentosData from "../data/ubigeo_peru_2016_departamentos.json";
 import provinciasData from "../data/ubigeo_peru_2016_provincias.json";
 import distritosData from "../data/ubigeo_peru_2016_distritos.json"
@@ -14,7 +14,8 @@ const PublicarAnuncio = () => {
     const [edad, setEdad] = useState<string>("");
     const [numero, setNumero] = useState<string>("")
     const [descripcion, setDescripcion] = useState<string>("")
-    const [texto, setTexto] = useState<string>("");
+    const [texto, setTexto] = useState<string>("")
+    const [tarifas, setTarifas] = useState<{ descripcion: string, precio: string }[]>([])
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
@@ -501,11 +502,39 @@ const PublicarAnuncio = () => {
                         </p>
                     </div>
                 </div>
+                {/* Tarifas */}
+                <div className="border border-[#101828] bg-white p-2">
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">TARIFAS</h2>
+                    <div className="flex gap-x-2">
+                        <div className="w-7/12">
+                            <label className="font-bold mb-2 block">
+                                Descripción
+                            </label>
+                            <div className="space-y-1">
+                                <input type="text" value={"1 hora"} readOnly className="border px-1 py-1.5 w-full bg-gray-100" />
+                                <input type="text" className="border px-1 py-1.5 w-full" />
+                                <input type="text" className="border px-1 py-1.5 w-full" />
+                                <input type="text" className="border px-1 py-1.5 w-full" />
+                                <input type="text" className="border px-1 py-1.5 w-full" />
+                            </div>
+                        </div>
+                        <div className="w-5/12">
+                            <label className="font-bold mb-2 block">Precio en soles</label>
+                            <div className="space-y-1">
+                                <input type="number" className="border px-1 py-1.5 w-full" />
+                                <input type="number" className="border px-1 py-1.5 w-full" />
+                                <input type="number" className="border px-1 py-1.5 w-full" />
+                                <input type="number" className="border px-1 py-1.5 w-full" />
+                                <input type="number" className="border px-1 py-1.5 w-full" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/* Horarios de Atencion */}
-                <div className="border border-[#101828] p-2">
+                <div className="border border-[#101828] p-2 bg-white">
                     <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">HORARIOS DE ATENCIÓN</h2>
                     <div className="mb-2">
-                        <p className="mb-2">¿Mismo horario para los días en que trabajas?</p>
+                        <p className="mb-2">¿Mismo horario todos los días?</p>
                         <label className="mr-2">
                             <input
                                 type="radio"
@@ -639,7 +668,7 @@ const PublicarAnuncio = () => {
                     )}
                 </div>
                 <div className="border border-[#101828] p-2">
-                <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">FOTOS</h2>
+                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">FOTOS</h2>
                     <label htmlFor="imagenes" className="font-bold">
                         Subir Imágenes (mínimo 3):
                     </label>

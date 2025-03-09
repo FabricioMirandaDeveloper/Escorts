@@ -112,17 +112,17 @@ const AnuncioDetalle = () => {
                     ))}
                 </Slider>
             )}
-            <div className="p-3">
+            <div className="p-3 space-y-4">
                 <h2 className="text-xl font-bold mb-2 text-[#101828] overflow-hidden">
                     {anuncio.nombre} {anuncio.numero}, {anuncio.descripcion}
                 </h2>
-                <div className="mb-40 flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.departamento}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.distrito}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.edad} años</span>
                 </div>
                 <div>
-                    <p>{anuncio.texto}</p>
+                    <p className="text-[#101828] mb-10 text-lg">{anuncio.texto}</p>
                 </div>
             </div>
 
