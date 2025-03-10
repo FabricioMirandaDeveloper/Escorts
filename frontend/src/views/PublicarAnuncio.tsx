@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faMapLocationDot, faPencil, faPhone, faTimes, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
 import departamentosData from "../data/ubigeo_peru_2016_departamentos.json";
 import provinciasData from "../data/ubigeo_peru_2016_provincias.json";
 import distritosData from "../data/ubigeo_peru_2016_distritos.json"
@@ -15,7 +15,13 @@ const PublicarAnuncio = () => {
     const [numero, setNumero] = useState<string>("")
     const [descripcion, setDescripcion] = useState<string>("")
     const [texto, setTexto] = useState<string>("")
-    const [tarifas, setTarifas] = useState<{ descripcion: string, precio: string }[]>([])
+    const [tarifas, setTarifas] = useState<{ descripcion: string, precio: number }[]>([
+        { descripcion: "1 hora", precio: 0 },
+        { descripcion: "", precio: 0 },
+        { descripcion: "", precio: 0 },
+        { descripcion: "", precio: 0 },
+        { descripcion: "", precio: 0 },
+    ])
     const [imagenes, setImagenes] = useState<File[]>([]);
     const [previas, setPrevias] = useState<string[]>([]);
     const [subiendo, setSubiendo] = useState<boolean>(false);
@@ -50,6 +56,18 @@ const PublicarAnuncio = () => {
         const value = e.target.value.replace(/\D/g, '');
         setNumero(value);
     };
+
+    const manejarCambioTarifa = (index: number, key: string, value: string | number) => {
+        // Crear una copia del estado actual de tarifas
+        const nuevasTarifas = [...tarifas];
+        // Si la tarifa no existe aún, se puede inicializar
+        if (!nuevasTarifas[index]) {
+            nuevasTarifas[index] = { descripcion: "", precio: 0 };
+        }
+        nuevasTarifas[index] = { ...nuevasTarifas[index], [key]: value };
+        // Actualizar el estado con las nuevas tarifas
+        setTarifas(nuevasTarifas);
+    }
 
 
     const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -206,11 +224,16 @@ const PublicarAnuncio = () => {
         setSubiendo(true);
 
         try {
+
             // Convertir imágenes a Base64
             const imagenesBase64 = await Promise.all(
                 imagenes.map(async (imagen) => await convertirImagenABase64(imagen))
             );
 
+            // Filtrar las tarifas válidas
+            const tarifasValidas = tarifas.filter(
+                (tarifa) => tarifa.descripcion.trim() !== "" || tarifa.precio > 0
+            )
             // Guardar en Firestore
             await setDoc(
                 doc(db, "usuarios", user.uid),
@@ -221,6 +244,7 @@ const PublicarAnuncio = () => {
                     numero: Number(numero),
                     descripcion,
                     texto,
+                    tarifas: tarifasValidas,
                     email: user.email,
                     imagenes: imagenesBase64,
                     actualizado: new Date(),
@@ -247,6 +271,14 @@ const PublicarAnuncio = () => {
             setDistritoNombre("");
             setHorarios([])
             setTexto("")
+            setTarifas([
+                { descripcion: "1 hora", precio: 0 },
+                { descripcion: "", precio: 0 },
+                { descripcion: "", precio: 0 },
+                { descripcion: "", precio: 0 },
+                { descripcion: "", precio: 0 },
+            ]);
+            setDiasSeleccionados([]);
         } catch (error) {
             console.error("Error al subir imágenes o guardar datos: ", error);
             toast.error("Hubo un error al guardar la información.");
@@ -269,7 +301,12 @@ const PublicarAnuncio = () => {
                 {/* Donde Anunciarte */}
                 <div className="border border-[#101828] bg-white p-2 space-y-5">
                     <div>
-                        <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">DÓNDE ANUNCIARTE</h2>
+                        <div className="flex items-center gap-x-2 mb-2 text-[#CA1E25]">
+                            <FontAwesomeIcon icon={faMapLocationDot} className="text-xl" />
+                            <h2 className="text-center font-bold text-lg">DÓNDE ANUNCIARTE</h2>
+                        </div>
+                    </div>
+                    <div>
                         <p className="font-bold">Tú eres:</p>
                         <div className="flex gap-x-4 mt-1">
                             <button
@@ -298,7 +335,7 @@ const PublicarAnuncio = () => {
                             </button>
                         </div>
                     </div>
-                    <div className="mt-1">
+                    <div>
                         <label htmlFor="departamento" className="font-bold">
                             Departamento:
                         </label>
@@ -385,30 +422,40 @@ const PublicarAnuncio = () => {
                         </select>
                     </div>
                 </div>
+
                 {/* Contacto */}
-                <div className="border border-[#101828] bg-white p-2">
-                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">CONTACTO</h2>
-                    <label htmlFor="numero" className="font-bold">
-                        Número de celular:
-                    </label>
-                    <input
-                        type="tel"
-                        id="numero"
-                        value={numero}
-                        onChange={manejadorNumero}
-                        className="mt-1 block w-full p-2 rounded text-black border-2"
-                        required
-                        inputMode="numeric"
-                        maxLength={9}
-                        onInvalid={(e) => {
-                            e.currentTarget.setCustomValidity("El número debe ser de 9 dígitos")
-                        }}
-                        onInput={(e) => e.currentTarget.setCustomValidity("")}
-                    />
+                <div className="border border-[#101828] bg-white p-2 space-y-5">
+                    <div className="flex items-center gap-x-2 mb-2 text-[#CA1E25]">
+                        <FontAwesomeIcon icon={faPhone} className="text-xl" />
+                        <h2 className="font-bold text-lg">CONTACTO</h2>
+                    </div>
+                    <div>
+                        <label htmlFor="numero" className="font-bold">
+                            Número de celular:
+                        </label>
+                        <input
+                            type="tel"
+                            id="numero"
+                            value={numero}
+                            onChange={manejadorNumero}
+                            className="mt-1 block w-full p-2 rounded text-black border-2"
+                            required
+                            inputMode="numeric"
+                            maxLength={9}
+                            onInvalid={(e) => {
+                                e.currentTarget.setCustomValidity("El número debe ser de 9 dígitos")
+                            }}
+                            onInput={(e) => e.currentTarget.setCustomValidity("")}
+                        />
+                    </div>
                 </div>
+
                 {/* Presentacion */}
                 <div className="border border-[#101828] bg-white p-2 space-y-5">
-                    <h2 className="text-center font-bold mb-2 text-lg text-[#CA1E25]">PRESENTACIÓN</h2>
+                    <div className="flex items-center gap-x-2 mb-2 text-[#CA1E25]">
+                        <FontAwesomeIcon icon={faPencil} className="text-xl" />
+                        <h2 className="text-center font-bold text-lg">PRESENTACIÓN</h2>
+                    </div>
                     <div>
                         <label htmlFor="nombre" className="font-bold">
                             Nombre:
@@ -511,21 +558,57 @@ const PublicarAnuncio = () => {
                                 Descripción
                             </label>
                             <div className="space-y-1">
-                                <input type="text" value={"1 hora"} readOnly className="border px-1 py-1.5 w-full bg-gray-100" />
-                                <input type="text" className="border px-1 py-1.5 w-full" />
-                                <input type="text" className="border px-1 py-1.5 w-full" />
-                                <input type="text" className="border px-1 py-1.5 w-full" />
-                                <input type="text" className="border px-1 py-1.5 w-full" />
+                                <input type="text" value={tarifas[0].descripcion} readOnly className="border px-1 py-1.5 w-full bg-gray-100" onChange={(e) => manejarCambioTarifa(0, "descripcion", e.target.value)} />
+                                <input type="text" value={tarifas[1].descripcion}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) => manejarCambioTarifa(1, "descripcion", e.target.value)} />
+                                <input type="text" value={tarifas[2].descripcion}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) => manejarCambioTarifa(2, "descripcion", e.target.value)} />
+                                <input type="text" value={tarifas[3].descripcion}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) => manejarCambioTarifa(3, "descripcion", e.target.value)} />
+                                <input type="text" value={tarifas[4].descripcion}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) => manejarCambioTarifa(4, "descripcion", e.target.value)} />
                             </div>
                         </div>
                         <div className="w-5/12">
                             <label className="font-bold mb-2 block">Precio en soles</label>
                             <div className="space-y-1">
-                                <input type="number" className="border px-1 py-1.5 w-full" />
-                                <input type="number" className="border px-1 py-1.5 w-full" />
-                                <input type="number" className="border px-1 py-1.5 w-full" />
-                                <input type="number" className="border px-1 py-1.5 w-full" />
-                                <input type="number" className="border px-1 py-1.5 w-full" />
+                                <input type="number" value={tarifas[0].precio} className="border px-1 py-1.5 w-full" onChange={(e) => manejarCambioTarifa(0, "precio", parseInt(e.target.value))} />
+                                <input
+                                    type="number"
+                                    value={tarifas[1].precio}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) =>
+                                        manejarCambioTarifa(1, "precio", parseInt(e.target.value))
+                                    }
+                                />
+                                <input
+                                    type="number"
+                                    value={tarifas[2].precio}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) =>
+                                        manejarCambioTarifa(2, "precio", parseInt(e.target.value))
+                                    }
+                                />
+                                <input
+                                    type="number"
+                                    value={tarifas[3].precio}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) =>
+                                        manejarCambioTarifa(3, "precio", parseInt(e.target.value))
+                                    }
+                                />
+                                <input
+                                    type="number"
+                                    value={tarifas[4].precio}
+                                    className="border px-1 py-1.5 w-full"
+                                    onChange={(e) =>
+                                        manejarCambioTarifa(4, "precio", parseInt(e.target.value))
+                                    }
+                                />
                             </div>
                         </div>
                     </div>

@@ -15,6 +15,7 @@ interface Anuncio {
     numero: number;
     descripcion: string;
     texto: string
+    tarifas?: { descripcion: string; precio: number }[]
     email: string;
     imagenes: string[];
     distrito: string;
@@ -120,6 +121,7 @@ const AnuncioDetalle = () => {
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.departamento}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.distrito}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.edad} años</span>
+                    {anuncio.tarifas && anuncio.tarifas.length > 0 && (<span className="bg-[#101828] px-2 py-1 rounded-md">S/. {anuncio.tarifas[0].precio}</span>)}
                 </div>
                 <div>
                     <p className="text-[#101828] mb-10 text-lg">{anuncio.texto}</p>
