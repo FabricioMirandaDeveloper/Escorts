@@ -92,11 +92,10 @@ const AnuncioDetalle = () => {
     };
 
     return (
-        <div className="bg-white">
+        <div className="bg-white text-[#101828]">
             {/* Botón de cerrar / regresar a anuncios */}
-            <Link to="/" className="absolute z-10 top-0 right-0 w-10 h-10 flex justify-center items-center bg-[#CC3C39] rounded-es-lg">
-                {/* <span className="text-xl font-bold">X</span> */}
-                <FontAwesomeIcon icon={faXmark} className="text-3xl" />
+            <Link to="/" className="fixed z-10 top-0 right-0 w-10 h-10 flex justify-center items-center bg-[#CC3C39] rounded-es-lg bg-opacity-80">
+                <FontAwesomeIcon icon={faXmark} className="text-3xl text-white" />
             </Link>
 
             {/* Mostrar imagen ampliada (o un slider si hay varias imágenes) */}
@@ -113,24 +112,40 @@ const AnuncioDetalle = () => {
                     ))}
                 </Slider>
             )}
-            <div className="p-3 space-y-4">
-                <h2 className="text-xl font-bold mb-2 text-[#101828] overflow-hidden">
+            <div className="p-3 space-y-4 text-[#101828]">
+                <h2 className="text-xl font-bold mb-2 overflow-hidden">
                     {anuncio.nombre} {anuncio.numero}, {anuncio.descripcion}
                 </h2>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap text-white">
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.departamento}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.distrito}</span>
                     <span className="bg-[#101828] px-2 py-1 rounded-md">{anuncio.edad} años</span>
                     {anuncio.tarifas && anuncio.tarifas.length > 0 && (<span className="bg-[#101828] px-2 py-1 rounded-md">S/. {anuncio.tarifas[0].precio}</span>)}
                 </div>
                 <div>
-                    <p className="text-[#101828] mb-10 text-lg">{anuncio.texto}</p>
+                    <p className="text-[#101828] text-lg">{anuncio.texto}</p>
                 </div>
+                
+            </div>
+            <div className="p-3 border-gray-200 border-t">
+                    <h3 className="text-xl font-bold mb-3">Tarifas</h3>
+                    <ul>
+                        {anuncio.tarifas?.map((tarifa, index) => (
+                            <li key={index} className="flex justify-between items-center">
+                                <span>{tarifa.descripcion}</span>
+                                <span>S/. {tarifa.precio}</span>
+                                
+                            </li>
+                        ))}
+                    </ul>
+            </div>
+            <div className="p-3 border-gray-200 border-t mb-24">
+                <h3 className="text-xl font-bold mb-3">Horario</h3>
             </div>
 
             {/* Sección de contacto vía WhatsApp */}
             <div className="fixed bottom-0 left-0 right-0 flex justify-center items-center space-x-2 py-3 font-bold bg-[#52CD5F]">
-                <FontAwesomeIcon icon={faWhatsapp} style={{ color: "white", fontSize: "30px" }} />
+                <FontAwesomeIcon icon={faWhatsapp} className="text-white" style={{ color: "white", fontSize: "30px" }} />
                 <a
                     href={`https://wa.me/51${anuncio.numero}`}
                     target="_blank"
